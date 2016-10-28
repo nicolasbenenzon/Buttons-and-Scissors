@@ -1,4 +1,4 @@
 # TPE PI
 # Things To Do
-- Estructurar y diagramar trabajo
-- División de tareas
+<strike>- Estructurar y diagramar trabajo</strike>
+<strike>- División de tareas</strike>
