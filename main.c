@@ -182,16 +182,12 @@ void Jugar2P(){
 	ElegirDim();
 }
 
-int ElegirDim(){
-	do _DIM = getint("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
-	while(_DIM < 5 || _DIM > 30);
-	/*printf("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): "); // MÉTODO RECURSIVO
+void ElegirDim(){
+	/*do _DIM = getint("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
+	while(_DIM < 5 || _DIM > 30);*/
+	printf("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): "); // MÉTODO RECURSIVO
 	scanf("%d", &_DIM);
-	if(_DIM < 5 || _DIM > 30) 
-	{
-		printf("ERROR. Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
-		ElegirDim();
-	}*/
+	if(_DIM < 5 || _DIM > 30) ElegirDim();
 }
 
 void Salir(){
