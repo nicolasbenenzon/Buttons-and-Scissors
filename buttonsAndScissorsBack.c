@@ -93,7 +93,5 @@ void JugarAi(tablero* t,int *puntos)
 	cortes=realloc(cortes,sizeof(*cortes)*dimension);
 	resp=cortes[rand()%dimension];
 	//*puntos=*puntos+efectuar_corte(resp);
-	printf("%d\n",dimension);
-	imprimircortes(cortes,dimension);
 }
 
