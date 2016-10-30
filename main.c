@@ -83,6 +83,11 @@ main(void)
 		
 	
 	#endif
+	for(i = 0; i < DIM; i++)
+	{
+		free(tablero[i]);
+	}
+	free(tablero);
 	return 0;
 }
 
