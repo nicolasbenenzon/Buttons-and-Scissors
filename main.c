@@ -47,7 +47,7 @@ main(void)
 	randomize();
 	Menu();
 	TipoTablero tablero;
-	tablero = malloc(pow(DIM, 2));
+	tablero = malloc(DIM * sizeof(*tablero));
 	int i, j;
 	for(i = 0; i < DIM; i++)
 	{
