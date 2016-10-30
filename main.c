@@ -180,6 +180,7 @@ void Jugar(){
 
 void Jugar2P(){	
 	ElegirDim();
+	//GenerarTablero
 }
 
 void ElegirDim(){
