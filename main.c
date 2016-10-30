@@ -40,6 +40,8 @@ void ImprimirMenu();
 void Salir();
 int LeerComando();
 int Existe(char *archivo);
+int Guardar(TipoTablero tablero, int dim, char * nombreArch, int modoJuego, int proximoTurno);
+int CargarArchivo(TipoTablero tablero, int * dim, char * nombreArch, int * modoJuego, int * proximoTurno);
 
 int
 main(void)
@@ -345,5 +347,54 @@ void ReportarErrorVariedades()
 	printf("Error: El corte no tiene una única variedad de botones\n");
 }
 
+int Guardar(TipoTablero tablero, int dim, char * nombreArch, int modoJuego, int proximoTurno)
+{
+	int i;
+	
+	//Crea el archivo con el nombre nombreArch
+	FILE * archPartida;
+    	archPartida = fopen(nombreArch, "wb");
+	
+	//Se fija que no haya habido errores
+	if(archPartida == NULL)
+        return 0;
+	
+	//Escribe los datos de la partida en el archivo
+    	fwrite(&modoJuego, sizeof(modoJuego), 1, archPartida); //Modo de Juego (2P o Jugador vs. Computadora)
+	fwrite(&proximoTurno, sizeof(proximoTurno), 1, archPartida); //De quién es el próximo turno
+	fwrite(&dim, sizeof(dim), 1, archPartida); //Dimensión del tablero
+	for(i = 0; i < dim; i++)
+		fwrite(&(tablero[i][0]), dim, 1, archPartida); //Escribe cada fila del tablero en el archivo
+	
+	
+    	//Una vez finalizada la escritura, cierra el archivo
+	fclose(archPartida);
+	
+	return 1;
+}
+
+int CargarArchivo(TipoTablero tablero, int * dim, char * nombreArch, int * modoJuego, int * proximoTurno)
+{
+	int i;
+	FILE * archPartida;
+	
+	//Pregunta si existe el archivo, y en ese caso lo abre en modo lectura 
+	//(por ser lazy, si no existe el archivo nunca lo abre), y corrobora que no haya errores
+	if(!Existe(nombreArch) || (archPartida = fopen(nombreArch, "rb")) == NULL)
+		return 0;
+	
+	
+	//Lee los datos del archivo y carga las variables
+	fread(modoJuego, sizeof(*modoJuego), 1, archPartida);
+	fread(proximoTurno, sizeof(*proximoTurno), 1, archPartida);
+	fread(dim, sizeof(*dim), 1, archPartida);
+	for(i = 0; i < *dim; i++)
+		fread(&(tablero[i][0]), *dim, 1, archPartida);
+	
+	//Cierra el archivo
+	fclose(archPartida);
+	
+	return 1;
+}
 
 
