@@ -38,7 +38,7 @@ void Jugar2P();
 void Menu();
 void ImprimirMenu();
 void Salir();
-int LeerComando();
+void LeerComando();
 int Existe(char *archivo);
 int Guardar(TipoTablero tablero, int dim, char * nombreArch, int modoJuego, int proximoTurno);
 int CargarArchivo(TipoTablero tablero, int * dim, char * nombreArch, int * modoJuego, int * proximoTurno);
@@ -93,8 +93,66 @@ main(void)
 	return 0;
 }
 
-int LeerComando(){
-	Salir();
+void LeerComando()
+{
+	char cmd[10];
+	char name[48];
+	int done = 0;
+	int F1, C1, F2, C2;
+	char aux;
+	do
+	{
+		printf("Ingrese el comando: ");
+		if(scanf("%s %s", &cmd, &name))
+		{
+			if(strcmp(cmd, "save") == 0)
+			{
+				if(strlen(name) > 0)
+				{
+					Guardar(name);
+					done = 1;
+				}
+				else printf("Debe ingresar un nombre válido de archivo.");
+			}
+			else if(strcmp(cmd, "quit") == 0) 
+			{
+				char c;
+				c = getchar("¿Está seguro que quiere salir (Y/N)? ");
+				if(c == 'Y')
+				{
+					c = getchar("¿Desea guardar la partida antes de salir (Y/N)? ");
+					if(c == 'Y')
+					{
+						printf("Ingrese el nombre del archivo: ");
+						scanf("%s", &name);
+						if(strlen(name) > 0) 
+						{
+							Guardar(name);
+							Salir();
+						}
+						else printf("Debe ingresar un nombre válido de archivo.");
+					}
+					else Salir();
+				}
+				else done = 1;
+			}
+			else printf("Comando inválido.");
+		}
+		else if(scanf("[%d,%d][%d,%d]%c", &F1, &C1, &F2, &C2, &aux) == 5)
+		{
+			if(aux != '\n') printf("Por favor, respete el formato indicado.");
+			else
+			{
+				if(jugadaValida(Tablero, F1, C1, F2, C2, _DIM)) 
+				{
+					efectuarCorte(Tablero, F1, C1, F2, C2);
+					done = 1;
+				}
+			}
+		}
+		else printf("Comando inválido.");
+	}
+	while(done == 0);
 }
 
 void Menu(){
