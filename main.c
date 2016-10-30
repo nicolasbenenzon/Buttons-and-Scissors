@@ -19,6 +19,8 @@ typedef struct
 	int columna;
 }tCoordenada;
 
+int _DIM;
+
 int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim);
 int ExistePosicion(tCoordenada coordenada, int dim);
 int EstaVacio(TipoTablero tablero, tCoordenada coordenada);
@@ -30,11 +32,20 @@ void ReportarErrorPosicion(tCoordenada coordenada);
 void ReportarErrorEspacioVacio(tCoordenada coordenada);
 void ReportarErrorLineaRecta();
 void ReportarErrorVariedades();
+void ElegirDim();
+void Jugar();
+void Jugar2P();
+void Menu();
+void ImprimirMenu();
+void Salir();
+int LeerComando();
+int Existe(char *archivo);
 
 int
 main(void)
 {
 	randomize();
+	Menu();
 	TipoTablero tablero;
 	tablero = malloc(pow(DIM, 2));
 	int i, j;
@@ -56,7 +67,7 @@ main(void)
 		tablero[1][0] = '0'; tablero[1][1] = '0'; tablero[1][2] = '0'; tablero[1][3] = 'B'; tablero[1][4] = 'D';
 		tablero[2][0] = '0'; tablero[2][1] = '0'; tablero[2][2] = 'B'; tablero[2][3] = '0'; tablero[2][4] = '0';
 		tablero[3][0] = '0'; tablero[3][1] = 'C'; tablero[3][2] = 'D'; tablero[3][3] = 'C'; tablero[3][4] = 'A';
-		tablero[4][0] = 'B'; tablero[4][1] = '0'; tablero[4][2] = '0'; tablero[4][3] = '0'; tablero[4][4] = '0';
+		tablero[4][4] = 'B'; tablero[4][1] = '0'; tablero[4][2] = '0'; tablero[4][3] = '0'; tablero[4][4] = '0';
 		tCoordenada origen = {3,2};
 		tCoordenada destino = {1,4};
 		int existe = JugadaValida(tablero, origen, destino, DIM);
@@ -73,6 +84,53 @@ main(void)
 	
 	#endif
 	return 0;
+}
+
+int LeerComando(){
+	Salir();
+}
+
+void Menu(){
+    ImprimirMenu();
+    // Acá agus agregá tu función LeerOpcion
+}
+
+void ImprimirMenu(){
+    printf("MENÚ DEL JUEGO:\n");
+    printf("1. Juego de dos jugadores\n");
+    printf("2. Juego contra computadora\n");
+    printf("3. Recuperar un juego grabado\n");
+    printf("4. Terminar\n");
+}
+
+void Jugar(){
+	
+}
+
+void Jugar2P(){	
+	ElegirDim();
+}
+
+int ElegirDim(){
+	do _DIM = getint("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
+	while(_DIM < 5 || _DIM > 30);
+	/*printf("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): "); // MÉTODO RECURSIVO
+	scanf("%d", &_DIM);
+	if(_DIM < 5 || _DIM > 30) 
+	{
+		printf("ERROR. Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
+		ElegirDim();
+	}*/
+}
+
+void Salir(){
+	exit();	
+}
+
+int Existe(char *archivo)
+{
+	struct stat buffer;
+	return (stat(archivo, &buffer) == 0);
 }
 
 int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim)
