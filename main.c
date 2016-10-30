@@ -56,7 +56,7 @@ main(void)
 		tablero[1][0] = '0'; tablero[1][1] = '0'; tablero[1][2] = '0'; tablero[1][3] = 'B'; tablero[1][4] = 'D';
 		tablero[2][0] = '0'; tablero[2][1] = '0'; tablero[2][2] = 'B'; tablero[2][3] = '0'; tablero[2][4] = '0';
 		tablero[3][0] = '0'; tablero[3][1] = 'C'; tablero[3][2] = 'D'; tablero[3][3] = 'C'; tablero[3][4] = 'A';
-		tablero[4][4] = 'B'; tablero[4][1] = '0'; tablero[4][2] = '0'; tablero[4][3] = '0'; tablero[4][4] = '0';
+		tablero[4][0] = 'B'; tablero[4][1] = '0'; tablero[4][2] = '0'; tablero[4][3] = '0'; tablero[4][4] = '0';
 		tCoordenada origen = {3,2};
 		tCoordenada destino = {1,4};
 		int existe = JugadaValida(tablero, origen, destino, DIM);
