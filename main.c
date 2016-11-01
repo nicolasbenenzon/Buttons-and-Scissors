@@ -161,9 +161,9 @@ void LeerComando()
 	while(done == 0);
 }
 
-void Menu(){
+int Menu(){
     ImprimirMenu();
-    // Acá agus agregá tu función LeerOpcion
+    return LeerOpcion();    
 }
 
 void ImprimirMenu(){
@@ -173,22 +173,42 @@ void ImprimirMenu(){
     printf("3. Recuperar un juego grabado\n");
     printf("4. Terminar\n");
 }
-
-void Jugar(){
+/*tablero es una estructura definida en front.h*/
+void Jugar(int opcion,tablero t){
+	int jugador1=1,jugador2=2,puntosjug1=0,puntosjug2=0,turno=rand()%2,termino;
+	do
+	{
+		printf("Turno Jugador %d\n",(turno==0)?jugador1:jugador2);
+		imprimir(t);
+		if(turno==1&&opcion==2)
+			JugarAI(t,&puntosjug2);
+		else if(turno==1)
+			Jugar2P(t,&puntosjug2);
+		else
+			Jugar2P(t,&puntosjug1);
+		turno=(turno+1)%2;
+		if(termino=esGanador(t))
+			printf("El ganador es el jugador %d!!!\n",(turno==0)?jugador1:jugador2);
+	}while(!termino);
+}
+	
+/*tablero es un struct en front.c*/
+void Jugar2P(tablero t,int* puntos,int jugador){
+	LeerComando(puntos);
 	
 }
 
-void Jugar2P(){	
-	ElegirDim();
-	//GenerarTablero
+void ElegirDim()
+{
+	ElegirDimr();
+	GenerarTablero(DIM);
 }
-
-void ElegirDim(){
+void ElegirDimr(){
 	/*do _DIM = getint("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
 	while(_DIM < 5 || _DIM > 30);*/
 	printf("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): "); // MÉTODO RECURSIVO
 	scanf("%d", &_DIM);
-	if(_DIM < 5 || _DIM > 30) ElegirDim();
+	if(_DIM < 5 || _DIM > 30) ElegirDimr();
 }
 
 void Salir(){
