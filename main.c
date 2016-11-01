@@ -2,6 +2,8 @@
 
 int main(void)
 {
+	randomize();
+	
 	int opcion=menu();
 	switch(opcion)
 	{
