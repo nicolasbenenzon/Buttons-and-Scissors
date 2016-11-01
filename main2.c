@@ -95,6 +95,8 @@ main(void)
 
 void LeerComando()
 {
+	tCoordenada origen;
+	tCoordenada destino;
 	char cmd[5];
 	char name[48];
 	int done = 0;
@@ -112,9 +114,9 @@ void LeerComando()
 					Guardar(name);
 					done = 1;
 				}
-				else printf("Debe ingresar un nombre válido de archivo.");
+				else printf("Debe ingresar un nombre válido de archivo.\n");
 			}
-			else printf("Comando inválido.");
+			else printf("Comando inválido.\n");
 		}
 		else if(scanf("%s", cmd) == 1)
 		{
@@ -136,48 +138,52 @@ void LeerComando()
 							Guardar(name);
 							Salir();
 						}
-						else printf("Debe ingresar un nombre válido de archivo.");
+						else printf("Debe ingresar un nombre válido de archivo.\n");
 					}
 					else Salir();
 				}
 				else done = 1;
 			}
-			else printf("Comando inválido.");
+			else printf("Comando inválido.\n");
 		}
 		else if(scanf("[%d,%d][%d,%d]%c", &F1, &C1, &F2, &C2, &aux) == 5)
 		{
-			if(aux != '\n') printf("Por favor, respete el formato indicado.");
+			if(aux != '\n') printf("Por favor, respete el formato indicado.\n");
 			else
 			{
 				int error;
-				
-				if(jugadaValida(Tablero, F1, C1, F2, C2, _DIM,&error)) 
+				int direccionCorte = -1;
+				origen.fila = F1;
+				origen.columna = C1;
+				destino.fila = F2;
+				destino.columna = C2;
+				if((direccionCorte = jugadaValida(Tablero, origen, destino, _DIM, &error)) != -1) 
 				{
-					efectuarCorte(Tablero, F1, C1, F2, C2);
+					efectuarCorte(Tablero, origen, destino, direccionCorte);
 					done = 1;
 				}
 				else
 				{
 					switch(error)
 					{
-						case 1:
+						case 1: ReportarErrorPosicion(origen);
 							break;
-						case 2:
+						case 2: ReportarErrorPosicion(destino);
 							break;
-						case 3:
+						case 3: ReportarErrorEspacioVacio(destino);
 							break;
-						case 4: 
+						case 4: ReportarErrorEspacioVacio(origen);
 							break;
-						case 5:
+						case 5: ReportarErrorLineaRecta();
 							break;
-						case 6:
+						case 6: ReportarErrorVariedades();
 							break;
 					}
 				}
 				
 			}
 		}
-		else printf("Comando inválido.");
+		else printf("Comando inválido.\n");
 	}
 	while(done == 0);
 }
@@ -244,7 +250,8 @@ int Existe(char *archivo)
 
 int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim, int * error)
 {
-	int botonesCortados = 0, direccion = -1;
+	int direccion = -1;
+	//int botonesCortados = 0;
 	
 	//Verifico que exista la posición de origen, en caso negativo reporta el error y retorna 0
 	if(ExistePosicion(origen, dim))
@@ -262,7 +269,8 @@ int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, i
 					if(! HayOtrasVariedades(tablero, origen, destino, direccion))
 					{
 						//En caso de haber cumplido con todos los requisitos, se efectúa el corte y guarda la cantidad de botones cortados
-						botonesCortados = EfectuarCorte(tablero, origen, destino, direccion);
+						//botonesCortados = EfectuarCorte(tablero, origen, destino, direccion);
+						return direccion;
 					}
 					else
 					{
@@ -293,7 +301,7 @@ int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, i
 		*error = 1;
 	}
 	
-	return botonesCortados;
+	return -1;
 }
 
 int ExistePosicion(tCoordenada coordenada, int dim)
