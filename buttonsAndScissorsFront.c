@@ -96,7 +96,7 @@ char * GenerarNombre(int dimension)
 		printf("No hay memoria suficiente para generar el archivo.\n");
 		return nombre;
 	}
-	if(dimension>=10)
+	/*if(dimension>=10)
 	{
 		nombre[0]=dimension/10+'0';
 		nombre[1]=dimension%10+'0';
@@ -112,7 +112,8 @@ char * GenerarNombre(int dimension)
 		nombre[2]=dimension%10+'0';
 		nombre[3]=0;
 
-	}
+	}*/
+	sprintf(nombre,"%dx%d",dimension,dimension);
 	return nombre;
 }
 /*Imprime el tablero por salida estandar*/
