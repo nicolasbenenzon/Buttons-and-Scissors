@@ -5,11 +5,18 @@
 #include <ctype.h>
 #include "buttonsAndScissorsFront.h"
 #define LIMPIABUFFER() while(getchar()!='\n')
-typedef struct 
+/*typedef struct 
 {
 	char** tab;
 	int dim;
-}tablero;
+}tablero;*/
+
+char **Tablero;
+int _DIM;
+int ModoJuego;
+int ProximoTurno;
+
+
 tablero t={NULL,5};
 /* lee tableros de un archivo elije uno aleatoriamente y lo carga en el tablero del juego*/
 int GenerarTablero(tablero * t)
@@ -174,7 +181,7 @@ int LeerOpcion(void)
 			printf("Debe ingresar solo un numero entero entre 1 y 4 y luego enter.\n");
 		}
 		else if(opcion>=5||opcion<=0)
-		{tablero
+		{
 			printf("El numero debe ser 1 2 3 o 4.\n");
 		}
 	}while(c!='\n'||opcion>=5||opcion<=0);
