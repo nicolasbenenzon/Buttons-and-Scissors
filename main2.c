@@ -503,23 +503,29 @@ int Guardar(TipoTablero tablero, int dim, char * nombreArch, int modoJuego, int 
 	return 1;
 }
 
-int CargarArchivo(TipoTablero tablero, int * dim, char * nombreArch, int * modoJuego, int * proximoTurno)
+int CargarArchivo(char NombreArch[])
 {
 	int i;
 	FILE * archPartida;
 	
 	//Pregunta si existe el archivo, y en ese caso lo abre en modo lectura 
 	//(por ser lazy, si no existe el archivo nunca lo abre), y corrobora que no haya errores
-	if(!Existe(nombreArch) || (archPartida = fopen(nombreArch, "rb")) == NULL)
+	if(!Existe(NombreArch) || (archPartida = fopen(NombreArch, "rb")) == NULL)
 		return 0;
 	
 	
 	//Lee los datos del archivo y carga las variables
-	fread(modoJuego, sizeof(*modoJuego), 1, archPartida);
-	fread(proximoTurno, sizeof(*proximoTurno), 1, archPartida);
-	fread(dim, sizeof(*dim), 1, archPartida);
-	for(i = 0; i < *dim; i++)
-		fread(&(tablero[i][0]), *dim, 1, archPartida);
+	fread(&ModoJuego, sizeof(ModoJuego), 1, archPartida);
+	fread(&ProximoTurno, sizeof(ProximoTurno), 1, archPartida);
+	fread(&_DIM, sizeof(_DIM), 1, archPartida);
+	
+	Tablero = malloc(_DIM * sizeof(char*));
+	
+	for(i = 0; i < _DIM; i++)
+	{	
+		Tablero[i] = malloc(_DIM);
+		fread(Tablero[i], _DIM, 1, archPartida);
+	}
 	
 	//Cierra el archivo
 	fclose(archPartida);
