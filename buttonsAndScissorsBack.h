@@ -11,8 +11,10 @@ typedef struct
 **y de acuerdo a la estrategia ya sea en el maximo o el minimo de todos los que tengan esa cantidad de botones elije uno aleatoriamente
 */
 void JugarAi(tablero*,int *);
-/*Recibe el tablero una fila y una columns y un incremento para la fila y para la columna
+/*Recibe el tablero una fila y una columns y un incremento para la fila y para la columna y la direccion a la variable botones
 **recorre el tablero a partir de la fila y columna recibida sumandole los incrementos
-**devuelve cuantos botones del mismo tipo al que esta en la fila y columna recibida hay en la direccion dada por los incrementos*/
-int buscdir(tablero,int,int,int,int,int);
+**devuelve en su nombre la cantidad de espacios que recorrio 
+**modifica a botones colocando cuantos botones del mismo tipo al que esta en la fila y columna recibida hay en la direccion dada por los incrementos
+*/
+int buscdir(tablero,int,int,int,int,int,int*);
 #endif
