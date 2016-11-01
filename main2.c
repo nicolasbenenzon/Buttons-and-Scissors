@@ -6,10 +6,11 @@
 #include <ctype.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #define BORRA_BUFFER while(getchar()!= '\n');
 #define DEBUG
-#define DIM 5
+//#define DIM 5
 
 typedef char * TipoLinea;
 typedef TipoLinea * TipoTablero;
@@ -47,6 +48,23 @@ int
 main(void)
 {
 	randomize();
+	
+	int opcion = menu();
+	switch(opcion)
+	{
+		case 1: case 2:
+				ElegirDim();
+				Jugar(opcion,t);
+				break;
+		case 3:
+				Jugar(opcion,t);
+				break;
+		case 4:
+				printf("Hasta luego, regrese cuando quiera.\n");
+
+	}
+	return 0;
+	/*randomize();
 	Menu();
 	TipoTablero tablero;
 	tablero = malloc(DIM * sizeof(*tablero));
@@ -90,7 +108,7 @@ main(void)
 		free(tablero[i]);
 	}
 	free(tablero);
-	return 0;
+	return 0;*/
 }
 
 void LeerComando()
