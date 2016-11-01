@@ -246,7 +246,11 @@ void Jugar2P(tablero t,int* puntos,int jugador){
 void ElegirDim()
 {
 	ElegirDimr();
-	GenerarTablero(DIM);
+	if(GenerarTablero(_DIM))
+		//imprimir_Error
+	
+	/*cargo struct o parametros
+	*/
 }
 void ElegirDimr(){
 	/*do _DIM = getint("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
