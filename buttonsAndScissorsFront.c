@@ -5,11 +5,11 @@
 #include <ctype.h>
 #include "buttonsAndScissorsFront.h"
 #define LIMPIABUFFER() while(getchar()!='\n')
-/*typedef struct 
+typedef struct 
 {
 	char** tab;
 	int dim;
-}tablero;*/
+}tablero;
 tablero t={NULL,5};
 /* lee tableros de un archivo elije uno aleatoriamente y lo carga en el tablero del juego*/
 int GenerarTablero(tablero * t)
@@ -161,7 +161,8 @@ void imprimir(tablero tabjuego)
 /*Lee una opcion del menu principal por entrada estandard*/
 int LeerOpcion(void)
 {
-	int opcion;
+	int opcion, archivoCargado = 0;
+	char nombreArchivo[];
 	char c;
 	do
 	{
@@ -173,12 +174,20 @@ int LeerOpcion(void)
 			printf("Debe ingresar solo un numero entero entre 1 y 4 y luego enter.\n");
 		}
 		else if(opcion>=5||opcion<=0)
-		{
+		{tablero
 			printf("El numero debe ser 1 2 3 o 4.\n");
 		}
 	}while(c!='\n'||opcion>=5||opcion<=0);
-	/*if(opcion==3)
-		cargar();*/
+	if(opcion==3)
+	{	
+		do
+		{
+			printf("Ingrese el nombre del archivo: ");
+			scanf("%s", nombreArchivo);
+			archivoCargado = CargarArchivo(nombreArchivo);
+		} while(!archivoCargado)
+		
+	}
 	return opcion;
 }
 /*int main()
