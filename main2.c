@@ -21,7 +21,7 @@ typedef struct
 
 int _DIM;
 
-int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim);
+int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim,int* error);
 int ExistePosicion(tCoordenada coordenada, int dim);
 int EstaVacio(TipoTablero tablero, tCoordenada coordenada);
 int DireccionCorte(tCoordenada origen, tCoordenada destino);
@@ -149,11 +149,32 @@ void LeerComando()
 			if(aux != '\n') printf("Por favor, respete el formato indicado.");
 			else
 			{
-				/*if(jugadaValida(Tablero, F1, C1, F2, C2, _DIM)) 
+				int error;
+				
+				if(jugadaValida(Tablero, F1, C1, F2, C2, _DIM,&error)) 
 				{
 					efectuarCorte(Tablero, F1, C1, F2, C2);
 					done = 1;
-				}*/
+				}
+				else
+				{
+					switch(error)
+					{
+						case 1:
+							break;
+						case 2:
+							break;
+						case 3:
+							break;
+						case 4: 
+							break;
+						case 5:
+							break;
+						case 6:
+							break;
+					}
+				}
+				
 			}
 		}
 		else printf("Comando inválido.");
@@ -221,7 +242,7 @@ int Existe(char *archivo)
 	return (stat(archivo, &buffer) == 0);
 }
 
-int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim)
+int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim, int * error)
 {
 	int botonesCortados = 0, direccion = -1;
 	
@@ -245,29 +266,31 @@ int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, i
 					}
 					else
 					{
-						ReportarErrorVariedades(); //Como hay más de una variedad de botones en esa dirección, reporta el error
+						*error = 6;//ReportarErrorVariedades(); //Como hay más de una variedad de botones en esa dirección, reporta el error
 					}
 				}
 				else
 				{
-					ReportarErrorLineaRecta(); //Como el origen y destino no forman una línea recta, reporta el error
+					*error = 5;//ReportarErrorLineaRecta(); //Como el origen y destino no forman una línea recta, reporta el error
 				}
 			}
 			else
 			{
 				//Si alguno de las 2 coordenadas es un espacio vacio entonces ve cuál es y reporta el error
-				if(EstaVacio(tablero, origen)) ReportarErrorEspacioVacio(origen);
-				else ReportarErrorEspacioVacio(destino);
+				if(EstaVacio(tablero, origen)) *error = 3;//ReportarErrorEspacioVacio(origen);
+				else *error = 4;//ReportarErrorEspacioVacio(destino);
 			}
 		}
 		else
 		{
-			ReportarErrorPosicion(destino); //Como no existe la posición de destino, reporta el error
+			//ReportarErrorPosicion(destino); //Como no existe la posición de destino, reporta el error
+			*error = 2;
 		}
 	}
 	else
 	{
-		ReportarErrorPosicion(origen); //Como no existe la posición de origen, reporta el error
+		//ReportarErrorPosicion(origen); //Como no existe la posición de origen, reporta el error
+		*error = 1;
 	}
 	
 	return botonesCortados;
