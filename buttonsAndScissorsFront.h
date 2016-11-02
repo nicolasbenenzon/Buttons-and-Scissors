@@ -11,7 +11,7 @@ typedef struct
 **carga em ;a estructura recibida el tablero elegido
 **Devuelve 0 si no ocurrieron errores, 1 si no hay archivos con esa dimension y 2 si hay un error de formato en el archivo.
 */
-int GenerarTablero(tablero*);
+int GenerarTablero(void);
 /*Recibe una dimension y devuelve el nombre tiene el archivo correspondiente a esa dimension
 **el nombre del archivo generado sigue los criterios especificados "dimensionxdimension" donde dimension es la variable recibida.
 */
@@ -19,5 +19,9 @@ char * GenerarNombre(int);
 /*Lee de entrada estandard la opcion del menu principal elegida por el usuario*/
 int LeerOpcion(void);
 /*Imprime por salida estandard el tablero de juego*/
-void imprimir(tablero);
+void imprimir(char **);
+/*Recibe el nombre de una partida guardad y la carga a la actual con el tablero los puntos y el turno correspondiente
+**Devuelve 1 si no hay errores.
+*/
+int CargarArchivo(char NombreArch[])
 #endif

@@ -10,19 +10,17 @@
 	char** tab;
 	int dim;
 }tablero;*/
-
-char **Tablero;
-int _DIM;
-int ModoJuego;
-int ProximoTurno;
-
-
-tablero t={NULL,5};
+//tablero t={NULL,5};
+char ** Tablero=NULL;
+int _DIM=5;
 /* lee tableros de un archivo elije uno aleatoriamente y lo carga en el tablero del juego*/
-int GenerarTablero(tablero * t)
+int GenerarTablero()
 {
 	FILE* arch=NULL;
-	char * nombre=GenerarNombre(t->dim);
+	char * nombre=GenerarNombre(_DIM);
+	char ** aux;
+
+			
 	arch=fopen(nombre,"r");
 	if(arch==NULL)
 	{
@@ -31,7 +29,14 @@ int GenerarTablero(tablero * t)
 	}
 	else
 	{
-		int cant=0,i=0,j=0,k=0,salir=0,c;
+		int cant=0,i=0,j,k,salir=0,c,elegido;
+		Tablero=malloc(sizeof(*Tablero)*_DIM);
+		aux=malloc(sizeof(*aux)*_DIM);
+		for(j=0;j<_DIM;j++)
+		{	
+			Tablero[j]=malloc(sizeof(char)*_DIM);
+			aux[j]=malloc(sizeof(char)*_DIM);
+		}
 		char n1;
 		while((n1=fgetc(arch))!='\n'&&isdigit(n1))
 		{
@@ -43,19 +48,23 @@ int GenerarTablero(tablero * t)
 			printf("Error de formato.\n");
 			return 2;
 		}
-		tablero * archtab=NULL;
-		archtab=malloc(sizeof(*archtab)*cant);
+		elegido=rand()%cant;
+		printf("El elegido es: %d\n\n\n",elegido);
 		while(!feof(arch)&&(!salir))
 		{
-			archtab[i].tab=malloc(sizeof(*(archtab[i].tab))*(t->dim));
-			for(j=0;j<t->dim&&(!salir);j++)
+
+			for(j=0;j<_DIM&&(!salir);j++)
 			{
-				(archtab[i].tab)[j]=malloc(sizeof(char)*(t->dim));
-				for(k=0;k<t->dim&&(!salir);k++)
+				for(k=0;k<_DIM&&(!salir);k++)
 				{
 					c=fgetc(arch);
 					if((isalpha(c)&&isupper(c))||c==' ')
-						(archtab[i].tab)[j][k]=c;
+					{
+						if(i==elegido)
+							Tablero[j][k]=c;
+						else
+							aux[j][k]=c;
+					}
 					else
 					{
 						salir=2;
@@ -87,9 +96,19 @@ int GenerarTablero(tablero * t)
 					}
 				}
 			}
+			if(i==elegido)
+			{
+				printf("Es el elegido %d.\n",elegido);
+				imprimir(Tablero);
+			}
+			else
+			{
+				printf("No es el elegido %d.\n",i);
+				imprimir(aux);
+			}
 			i++;
 		}
-		t->tab=archtab[rand()%cant].tab;
+	
 		return salir;
 	}
 }	
@@ -103,28 +122,13 @@ char * GenerarNombre(int dimension)
 		printf("No hay memoria suficiente para generar el archivo.\n");
 		return nombre;
 	}
-	/*if(dimension>=10)
-	{
-		nombre[0]=dimension/10+'0';
-		nombre[1]=dimension%10+'0';
-		nombre[2]='x';
-		nombre[3]=dimension/10+'0';
-		nombre[4]=dimension%10+'0';
-		nombre[5]=0;		
-	}
-	else
-	{
-		nombre[0]=dimension%10+'0';
-		nombre[1]='x';
-		nombre[2]=dimension%10+'0';
-		nombre[3]=0;
-
-	}*/
-	sprintf(nombre,"%dx%d",dimension,dimension);
+	
+		sprintf(nombre,"%dx%d",dimension,dimension);
+		printf("nombre del archivo=%s\n",nombre);
 	return nombre;
 }
 /*Imprime el tablero por salida estandar*/
-void imprimir(tablero tabjuego)
+void imprimir(char** t)
 {
 	int i,j;
 	
@@ -132,7 +136,7 @@ void imprimir(tablero tabjuego)
 		for(i=0;i<2;i++)
 		{
 			printf("\t");
-			for(j=0;j<tabjuego.dim;j++)
+			for(j=0;j<_DIM;j++)
 			{
 				if(i==0)
 				{
@@ -146,9 +150,9 @@ void imprimir(tablero tabjuego)
 			}
 			printf("\n");
 		}
-		for(i=0;i<tabjuego.dim;i++)
+		for(i=0;i<_DIM;i++)
 		{
-				if(tabjuego.dim<10)
+				if(_DIM<10)
 					printf("%d|\t",i);
 				else
 				{
@@ -157,9 +161,9 @@ void imprimir(tablero tabjuego)
 					else
 						printf("%d|\t",i);
 				}
-			for(j=0;j<tabjuego.dim;j++)
+			for(j=0;j<_DIM;j++)
 			{
-					printf("%c  ",(tabjuego.tab)[i][j]);
+					printf("%c  ",t[i][j]);
 			}
 			printf("\n");
 		}
@@ -168,8 +172,7 @@ void imprimir(tablero tabjuego)
 /*Lee una opcion del menu principal por entrada estandard*/
 int LeerOpcion(void)
 {
-	int opcion, archivoCargado = 0;
-	char nombreArchivo[];
+	int opcion;
 	char c;
 	do
 	{
@@ -194,14 +197,44 @@ int LeerOpcion(void)
 			archivoCargado = CargarArchivo(nombreArchivo);
 		} while(!archivoCargado)
 		
-	}
-	return opcion;
+	}return opcion;
 }
+int CargarArchivo(char NombreArch[])
+{
+	int i;
+	FILE * archPartida;
+	
+	//Pregunta si existe el archivo, y en ese caso lo abre en modo lectura 
+	//(por ser lazy, si no existe el archivo nunca lo abre), y corrobora que no haya errores
+	if(!Existe(NombreArch) || (archPartida = fopen(NombreArch, "rb")) == NULL)
+		return 0;
+	
+	
+	//Lee los datos del archivo y carga las variables
+	fread(&ModoJuego, sizeof(ModoJuego), 1, archPartida);
+	fread(&ProximoTurno, sizeof(ProximoTurno), 1, archPartida);
+	fread(&_DIM, sizeof(_DIM), 1, archPartida);
+	
+	Tablero = malloc(_DIM * sizeof(char*));
+	
+	for(i = 0; i < _DIM; i++)
+	{	
+		Tablero[i] = malloc(_DIM);
+		fread(Tablero[i], _DIM, 1, archPartida);
+	}
+	
+	//Cierra el archivo
+	fclose(archPartida);
+	
+	return 1;
+}
+
 /*int main()
 {
 	srand(time(NULL));
-	printf("%d\n",LeerOpcion());
-	if(GenerarTablero(&t)==0)
-		imprimir(t);
+	//printf("%d\n",LeerOpcion());
+	//if(GenerarTablero()==0)
+		//imprimir(t);
+	GenerarTablero();
 	return 0;
 }*/
