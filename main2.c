@@ -6,10 +6,11 @@
 #include <ctype.h>
 #include <errno.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #define BORRA_BUFFER while(getchar()!= '\n');
 #define DEBUG
-#define DIM 5
+//#define DIM 5
 
 typedef char * TipoLinea;
 typedef TipoLinea * TipoTablero;
@@ -21,7 +22,7 @@ typedef struct
 
 int _DIM;
 
-int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim);
+int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim,int* error);
 int ExistePosicion(tCoordenada coordenada, int dim);
 int EstaVacio(TipoTablero tablero, tCoordenada coordenada);
 int DireccionCorte(tCoordenada origen, tCoordenada destino);
@@ -47,6 +48,23 @@ int
 main(void)
 {
 	randomize();
+	
+	int opcion = menu();
+	switch(opcion)
+	{
+		case 1: case 2:
+				ElegirDim();
+				Jugar(opcion,t);
+				break;
+		case 3:
+				Jugar(opcion,t);
+				break;
+		case 4:
+				printf("Hasta luego, regrese cuando quiera.\n");
+
+	}
+	return 0;
+	/*randomize();
 	Menu();
 	TipoTablero tablero;
 	tablero = malloc(DIM * sizeof(*tablero));
@@ -90,11 +108,13 @@ main(void)
 		free(tablero[i]);
 	}
 	free(tablero);
-	return 0;
+	return 0;*/
 }
 
 void LeerComando()
 {
+	tCoordenada origen;
+	tCoordenada destino;
 	char cmd[5];
 	char name[48];
 	int done = 0;
@@ -112,9 +132,9 @@ void LeerComando()
 					Guardar(name);
 					done = 1;
 				}
-				else printf("Debe ingresar un nombre válido de archivo.");
+				else printf("Debe ingresar un nombre válido de archivo.\n");
 			}
-			else printf("Comando inválido.");
+			else printf("Comando inválido.\n");
 		}
 		else if(scanf("%s", cmd) == 1)
 		{
@@ -136,27 +156,52 @@ void LeerComando()
 							Guardar(name);
 							Salir();
 						}
-						else printf("Debe ingresar un nombre válido de archivo.");
+						else printf("Debe ingresar un nombre válido de archivo.\n");
 					}
 					else Salir();
 				}
 				else done = 1;
 			}
-			else printf("Comando inválido.");
+			else printf("Comando inválido.\n");
 		}
 		else if(scanf("[%d,%d][%d,%d]%c", &F1, &C1, &F2, &C2, &aux) == 5)
 		{
-			if(aux != '\n') printf("Por favor, respete el formato indicado.");
+			if(aux != '\n') printf("Por favor, respete el formato indicado.\n");
 			else
 			{
-				/*if(jugadaValida(Tablero, F1, C1, F2, C2, _DIM)) 
+				int error;
+				int direccionCorte = -1;
+				origen.fila = F1;
+				origen.columna = C1;
+				destino.fila = F2;
+				destino.columna = C2;
+				if((direccionCorte = jugadaValida(Tablero, origen, destino, _DIM, &error)) != -1) 
 				{
-					efectuarCorte(Tablero, F1, C1, F2, C2);
+					efectuarCorte(Tablero, origen, destino, direccionCorte);
 					done = 1;
-				}*/
+				}
+				else
+				{
+					switch(error)
+					{
+						case 1: ReportarErrorPosicion(origen);
+							break;
+						case 2: ReportarErrorPosicion(destino);
+							break;
+						case 3: ReportarErrorEspacioVacio(destino);
+							break;
+						case 4: ReportarErrorEspacioVacio(origen);
+							break;
+						case 5: ReportarErrorLineaRecta();
+							break;
+						case 6: ReportarErrorVariedades();
+							break;
+					}
+				}
+				
 			}
 		}
-		else printf("Comando inválido.");
+		else printf("Comando inválido.\n");
 	}
 	while(done == 0);
 }
@@ -201,7 +246,11 @@ void Jugar2P(tablero t,int* puntos,int jugador){
 void ElegirDim()
 {
 	ElegirDimr();
-	GenerarTablero(DIM);
+	if(GenerarTablero(_DIM))
+		//imprimir_Error
+	
+	/*cargo struct o parametros
+	*/
 }
 void ElegirDimr(){
 	/*do _DIM = getint("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
@@ -221,9 +270,10 @@ int Existe(char *archivo)
 	return (stat(archivo, &buffer) == 0);
 }
 
-int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim)
+int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim, int * error)
 {
-	int botonesCortados = 0, direccion = -1;
+	int direccion = -1;
+	//int botonesCortados = 0;
 	
 	//Verifico que exista la posición de origen, en caso negativo reporta el error y retorna 0
 	if(ExistePosicion(origen, dim))
@@ -241,36 +291,39 @@ int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, i
 					if(! HayOtrasVariedades(tablero, origen, destino, direccion))
 					{
 						//En caso de haber cumplido con todos los requisitos, se efectúa el corte y guarda la cantidad de botones cortados
-						botonesCortados = EfectuarCorte(tablero, origen, destino, direccion);
+						//botonesCortados = EfectuarCorte(tablero, origen, destino, direccion);
+						return direccion;
 					}
 					else
 					{
-						ReportarErrorVariedades(); //Como hay más de una variedad de botones en esa dirección, reporta el error
+						*error = 6;//ReportarErrorVariedades(); //Como hay más de una variedad de botones en esa dirección, reporta el error
 					}
 				}
 				else
 				{
-					ReportarErrorLineaRecta(); //Como el origen y destino no forman una línea recta, reporta el error
+					*error = 5;//ReportarErrorLineaRecta(); //Como el origen y destino no forman una línea recta, reporta el error
 				}
 			}
 			else
 			{
 				//Si alguno de las 2 coordenadas es un espacio vacio entonces ve cuál es y reporta el error
-				if(EstaVacio(tablero, origen)) ReportarErrorEspacioVacio(origen);
-				else ReportarErrorEspacioVacio(destino);
+				if(EstaVacio(tablero, origen)) *error = 3;//ReportarErrorEspacioVacio(origen);
+				else *error = 4;//ReportarErrorEspacioVacio(destino);
 			}
 		}
 		else
 		{
-			ReportarErrorPosicion(destino); //Como no existe la posición de destino, reporta el error
+			//ReportarErrorPosicion(destino); //Como no existe la posición de destino, reporta el error
+			*error = 2;
 		}
 	}
 	else
 	{
-		ReportarErrorPosicion(origen); //Como no existe la posición de origen, reporta el error
+		//ReportarErrorPosicion(origen); //Como no existe la posición de origen, reporta el error
+		*error = 1;
 	}
 	
-	return botonesCortados;
+	return -1;
 }
 
 int ExistePosicion(tCoordenada coordenada, int dim)
@@ -454,23 +507,29 @@ int Guardar(TipoTablero tablero, int dim, char * nombreArch, int modoJuego, int 
 	return 1;
 }
 
-int CargarArchivo(TipoTablero tablero, int * dim, char * nombreArch, int * modoJuego, int * proximoTurno)
+int CargarArchivo(char NombreArch[])
 {
 	int i;
 	FILE * archPartida;
 	
 	//Pregunta si existe el archivo, y en ese caso lo abre en modo lectura 
 	//(por ser lazy, si no existe el archivo nunca lo abre), y corrobora que no haya errores
-	if(!Existe(nombreArch) || (archPartida = fopen(nombreArch, "rb")) == NULL)
+	if(!Existe(NombreArch) || (archPartida = fopen(NombreArch, "rb")) == NULL)
 		return 0;
 	
 	
 	//Lee los datos del archivo y carga las variables
-	fread(modoJuego, sizeof(*modoJuego), 1, archPartida);
-	fread(proximoTurno, sizeof(*proximoTurno), 1, archPartida);
-	fread(dim, sizeof(*dim), 1, archPartida);
-	for(i = 0; i < *dim; i++)
-		fread(&(tablero[i][0]), *dim, 1, archPartida);
+	fread(&ModoJuego, sizeof(ModoJuego), 1, archPartida);
+	fread(&ProximoTurno, sizeof(ProximoTurno), 1, archPartida);
+	fread(&_DIM, sizeof(_DIM), 1, archPartida);
+	
+	Tablero = malloc(_DIM * sizeof(char*));
+	
+	for(i = 0; i < _DIM; i++)
+	{	
+		Tablero[i] = malloc(_DIM);
+		fread(Tablero[i], _DIM, 1, archPartida);
+	}
 	
 	//Cierra el archivo
 	fclose(archPartida);
