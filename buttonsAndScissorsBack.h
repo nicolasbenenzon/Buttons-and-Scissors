@@ -10,13 +10,24 @@ typedef struct
 {
 	tCoordenada inicio;
 	tCoordenada final;
+	int direccion;
+	int deltaFil;
+	int deltaCol;
 }movimiento;
 
 typedef struct 
 {
-	char** tab;
+	TipoTablero tab;
 	int dim;
 }tablero;
+
+typedef struct
+{
+	tablero tableroJuego;
+	char * nombreArch;
+	int modoJuego;
+	int proximoTurno;
+}tJuego;
 
 /*Recibe el tablero de Juego y la direccion de donde se almacena el puntaje
 **elije aleatoriamente una estrategia(movimiento con minima cantidad de botones o con maxima cantidad de botones)
