@@ -22,13 +22,13 @@ typedef struct
 
 int _DIM;
 
-int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim,int* error);
+int JugadaValida(tablero * t, movimiento * mov, int * error);
 int ExistePosicion(tCoordenada coordenada, int dim);
 int EstaVacio(TipoTablero tablero, tCoordenada coordenada);
-int DireccionCorte(tCoordenada origen, tCoordenada destino);
-int HayOtrasVariedades(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int direccion);
-int EfectuarCorte(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int direccion);
-void CalcularDeltasFilCol(int direccion, int * deltaFil, int * deltaCol);
+int DireccionCorte(movimiento * mov);
+int HayOtrasVariedades(TipoTablero tablero, movimiento * mov);
+int EfectuarCorte(TipoTablero tablero, movimiento * mov);
+void CalcularDeltasFilCol(movimiento * mov);
 void ReportarErrorPosicion(tCoordenada coordenada);
 void ReportarErrorEspacioVacio(tCoordenada coordenada);
 void ReportarErrorLineaRecta();
@@ -40,9 +40,9 @@ void Menu();
 void ImprimirMenu();
 void Salir();
 void LeerComando();
-int Existe(char *archivo);
-int Guardar(TipoTablero tablero, int dim, char * nombreArch, int modoJuego, int proximoTurno);
-int CargarArchivo(TipoTablero tablero, int * dim, char * nombreArch, int * modoJuego, int * proximoTurno);
+int Existe(char * archivo);
+int Guardar(tJuego * juego);
+int CargarArchivo(char * nombreArchivo, tJuego * juego);
 
 int
 main(void)
@@ -270,29 +270,29 @@ int Existe(char *archivo)
 	return (stat(archivo, &buffer) == 0);
 }
 
-int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int dim, int * error)
+int JugadaValida(tablero * t, movimiento * mov, int * error)
 {
-	int direccion = -1;
+	mov -> direccion = -1;
 	//int botonesCortados = 0;
 	
 	//Verifico que exista la posición de origen, en caso negativo reporta el error y retorna 0
-	if(ExistePosicion(origen, dim))
+	if(ExistePosicion(mov -> inicio, t -> dim))
 	{
 		//En caso de existir la posición de origen, ahora verifico si existe la posición de destino, en caso negativo reporta el error y retorna 0
-		if(ExistePosicion(destino, dim))
+		if(ExistePosicion(mov -> final, t -> dim))
 		{
 			//Ahora verifico que tanto en el origen como en el destino haya algún botón, en caso negativo reporta el error y retorna 0
-			if(!EstaVacio(tablero, origen) && !EstaVacio(tablero, destino))
+			if(!EstaVacio(t -> tab, mov -> inicio) && !EstaVacio(t -> tab, mov -> final))
 			{
 				//Luego verifico si el corte determinado por el origen y el destino forma efectivamente una línea recta
-				if((direccion = DireccionCorte(origen, destino)) != -1)
+				if((mov -> direccion = DireccionCorte(mov)) != -1)
 				{
 					//Finalmente, se valida que no haya otras variedades de botones en esa dirección
-					if(! HayOtrasVariedades(tablero, origen, destino, direccion))
+					if(! HayOtrasVariedades(t -> tab, mov))
 					{
 						//En caso de haber cumplido con todos los requisitos, se efectúa el corte y guarda la cantidad de botones cortados
 						//botonesCortados = EfectuarCorte(tablero, origen, destino, direccion);
-						return direccion;
+						return mov -> direccion;
 					}
 					else
 					{
@@ -307,7 +307,7 @@ int JugadaValida(TipoTablero tablero, tCoordenada origen, tCoordenada destino, i
 			else
 			{
 				//Si alguno de las 2 coordenadas es un espacio vacio entonces ve cuál es y reporta el error
-				if(EstaVacio(tablero, origen)) *error = 3;//ReportarErrorEspacioVacio(origen);
+				if(EstaVacio(t -> tab, mov -> inicio)) *error = 3;//ReportarErrorEspacioVacio(origen);
 				else *error = 4;//ReportarErrorEspacioVacio(destino);
 			}
 		}
@@ -336,51 +336,51 @@ int EstaVacio(TipoTablero tablero, tCoordenada coordenada)
 	return (tablero[coordenada.fila][coordenada.columna] == '0');
 }
 
-int DireccionCorte(tCoordenada origen, tCoordenada destino)
+int DireccionCorte(movimiento * mov)
 {
-	if(origen.fila == destino.fila) //Si ambos están en la misma fila
+	if((mov -> inicio).fila == (mov -> final).fila) //Si ambos están en la misma fila
 	{
-		if(origen.columna < destino.columna) //Si el destino está a la derecha del origen
+		if((mov -> inicio).columna < (mov -> final).columna) //Si el final está a la derecha del inicio
 			return 0;
 		else 
-			if(origen.columna > destino.columna) //Si el destino está a la izquierda del origen
+			if((mov -> inicio).columna > (mov -> final).columna) //Si el final está a la izquierda del inicio
 				return 180;
 	}
-	else if(origen.columna == destino.columna) //Si están en la misma columna
+	else if((mov -> inicio).columna == (mov -> final).columna) //Si están en la misma columna
 	{
-		if(origen.fila < destino.fila) //Si el destino está por debajo del origen
+		if((mov -> inicio).fila < (mov -> final).fila) //Si el final está por debajo del inicio
 			return 270;
 		return 90; //El destino está por encima del origen
 	}
 	//Si no se cumplieron las condiciones anteriores, ahora se fija por las diagonales
-	else if(abs(origen.fila - destino.fila) == abs(origen.columna - destino.columna))
+	else if(abs((mov -> inicio).fila - (mov -> final).fila) == abs((mov -> inicio).columna - (mov -> final).columna))
 	{
 		//Si se forma una línea recta en diagonal, entonces retorna la respectiva dirección
-		if(origen.fila > destino.fila)
+		if((mov -> inicio).fila > (mov -> final).fila)
 		{
-			if(origen.columna < destino.columna)
+			if((mov -> inicio).columna < (mov -> final).columna)
 				return 45;
 			return 135;
 		}
-		if(origen.columna < destino.columna)
+		if((mov -> inicio).columna < (mov -> final).columna)
 			return 315;
 		return 225;
 	}
 	return -1; //En caso de no haber cumplido ninguna condición, significa que no forma una línea recta y retorna -1
 }
 
-int HayOtrasVariedades(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int direccion)
+int HayOtrasVariedades(TipoTablero tablero, movimiento * mov)
 {
-	int fil, col, deltaFil, deltaCol, hayBotonDistinto = 0;
-	char botonOrigen = tablero[origen.fila][origen.columna]; //Guardo el botón que está en origen
-	char botonDestino = tablero[destino.fila][destino.columna]; //Guardo el botón que está en destino
+	int fil, col, hayBotonDistinto = 0;
+	char botonOrigen = tablero[(mov -> inicio).fila][(mov -> inicio).columna]; //Guardo el botón que está en inicio
+	char botonDestino = tablero[(mov -> final).fila][(mov -> final).columna]; //Guardo el botón que está en final
 	
-	//Primero verifico que en origen y destino haya el mismo botón, porque si son distintos, no tiene sentido recorrer todo el camino, ya se sabe que las variedades son distintas
+	//Primero verifico que en inicio y final haya el mismo botón, porque si son distintos, no tiene sentido recorrer todo el camino, ya se sabe que las variedades son distintas
 	if(botonOrigen == botonDestino)
 	{
-		//Calculo el sentido en que hago el recorrido, y recorro
-		CalcularDeltasFilCol(direccion, &deltaFil, &deltaCol);
-		for(fil = origen.fila + deltaFil, col = origen.columna + deltaCol; fil != destino.fila && col != destino.columna && !hayBotonDistinto; fil += deltaFil, col += deltaCol)
+		//Calculo el sentido en que hago el recorrido(se guarda en deltaFil y deltaCol), y recorro
+		CalcularDeltasFilCol(mov);
+		for(fil = (mov -> inicio).fila + mov -> deltaFil, col = (mov -> inicio).columna + mov -> deltaCol; fil != (mov -> final).fila && col != (mov -> final).columna && !hayBotonDistinto; fil += mov -> deltaFil, col += mov -> deltaCol)
 		{
 			if(tablero[fil][col] != botonOrigen && tablero[fil][col] != '0')
 				hayBotonDistinto = 1;
@@ -391,18 +391,18 @@ int HayOtrasVariedades(TipoTablero tablero, tCoordenada origen, tCoordenada dest
 		return 1; //Si el destino y el origen tienen distintos botones, retorno 1
 }
 
-int EfectuarCorte(TipoTablero tablero, tCoordenada origen, tCoordenada destino, int direccion)
+int EfectuarCorte(TipoTablero tablero, movimiento * mov)
 {
-	int fil, col, deltaFil, deltaCol;
+	int fil, col;
 	int botonesCortados = 2; //Lo inicializo en 2 porque de entrada corto los botones de origen y destino
 	
-	//Corto los botones de origen y destino
-	tablero[origen.fila][origen.columna] = '0';
-	tablero[destino.fila][destino.columna] = '0';
+	//Corto los botones de inicio y final
+	tablero[(mov -> inicio).fila][(mov -> inicio).columna] = '0';
+	tablero[(mov -> final).fila][(mov -> final).columna] = '0';
 	
 	//Calculo el sentido en que hago el corte, y corto contando la cantidad de botones cortados
-	CalcularDeltasFilCol(direccion, &deltaFil, &deltaCol);
-	for(fil = origen.fila + deltaFil, col = origen.columna + deltaCol; fil != destino.fila && col != destino.columna; fil += deltaFil, col += deltaCol)
+	//CalcularDeltasFilCol(direccion, &deltaFil, &deltaCol);
+	for(fil = (mov -> inicio).fila + mov -> deltaFil, col = (mov -> inicio).columna + mov -> deltaCol; fil != (mov -> final).fila && col != (mov -> final).columna; fil += mov -> deltaFil, col += mov -> deltaCol)
 	{
 		//Si hay un botón en esa posición, lo corta e incrementa la variable de botones cortados
 		if(tablero[fil][col] != '0')
@@ -415,48 +415,48 @@ int EfectuarCorte(TipoTablero tablero, tCoordenada origen, tCoordenada destino, 
 	return botonesCortados;
 }
 
-void CalcularDeltasFilCol(int direccion, int * deltaFil, int * deltaCol)
+void CalcularDeltasFilCol(movimiento * mov)
 {
-	switch(direccion)
+	switch(mov -> direccion)
 	{
 		case 0:
-			*deltaFil = 0;
-			*deltaCol = 1;
+			mov -> deltaFil = 0;
+			mov -> deltaCol = 1;
 		break;
 		
 		case 45:
-			*deltaFil = -1;
-			*deltaCol = 1;
+			mov -> deltaFil = -1;
+			mov -> deltaCol = 1;
 		break;
 		
 		case 90:
-			*deltaFil = -1;
-			*deltaCol = 0;
+			mov -> deltaFil = -1;
+			mov -> deltaCol = 0;
 		break;
 		
 		case 135:
-			*deltaFil = -1;
-			*deltaCol = -1;
+			mov -> deltaFil = -1;
+			mov -> deltaCol = -1;
 		break;
 		
 		case 180:
-			*deltaFil = 0;
-			*deltaCol = -1;
+			mov -> deltaFil = 0;
+			mov -> deltaCol = -1;
 		break;
 		
 		case 225:
-			*deltaFil = 1;
-			*deltaCol = -1;
+			mov -> deltaFil = 1;
+			mov -> deltaCol = -1;
 		break;
 		
 		case 270:
-			*deltaFil = 1;
-			*deltaCol = 0;
+			mov -> deltaFil = 1;
+			mov -> deltaCol = 0;
 		break;
 		
 		case 315:
-			*deltaFil = 1;
-			*deltaCol = 1;
+			mov -> deltaFil = 1;
+			mov -> deltaCol = 1;
 		break;
 	}
 }
@@ -481,24 +481,25 @@ void ReportarErrorVariedades()
 	printf("Error: El corte no tiene una única variedad de botones\n");
 }
 
-int Guardar(TipoTablero tablero, int dim, char * nombreArch, int modoJuego, int proximoTurno)
+int Guardar(tJuego * juego)
 {
 	int i;
+	int dim = juego -> tableroJuego.dim; //Guarda la dirección del tablero en una variable auxiliar
 	
 	//Crea el archivo con el nombre nombreArch
 	FILE * archPartida;
-    	archPartida = fopen(nombreArch, "wb");
+    	archPartida = fopen(juego -> nombreArch, "wb");
 	
 	//Se fija que no haya habido errores
 	if(archPartida == NULL)
         return 0;
 	
 	//Escribe los datos de la partida en el archivo
-    	fwrite(&modoJuego, sizeof(modoJuego), 1, archPartida); //Modo de Juego (2P o Jugador vs. Computadora)
-	fwrite(&proximoTurno, sizeof(proximoTurno), 1, archPartida); //De quién es el próximo turno
+    	fwrite(&(juego -> modoJuego), sizeof(juego -> modoJuego), 1, archPartida); //Modo de Juego (2P o Jugador vs. Computadora)
+	fwrite(&(juego -> proximoTurno), sizeof(juego -> proximoTurno), 1, archPartida); //De quién es el próximo turno
 	fwrite(&dim, sizeof(dim), 1, archPartida); //Dimensión del tablero
 	for(i = 0; i < dim; i++)
-		fwrite(&(tablero[i][0]), dim, 1, archPartida); //Escribe cada fila del tablero en el archivo
+		fwrite(juego -> tableroJuego.tab[i], dim, 1, archPartida); //Escribe cada fila del tablero en el archivo
 	
 	
     	//Una vez finalizada la escritura, cierra el archivo
@@ -507,28 +508,30 @@ int Guardar(TipoTablero tablero, int dim, char * nombreArch, int modoJuego, int 
 	return 1;
 }
 
-int CargarArchivo(char NombreArch[])
+int CargarArchivo(char * nombreArchivo, tJuego * juego)
 {
 	int i;
 	FILE * archPartida;
+	int dim = juego -> tableroJuego.dim; //Guarda la dirección del tablero en una variable auxiliar
 	
 	//Pregunta si existe el archivo, y en ese caso lo abre en modo lectura 
 	//(por ser lazy, si no existe el archivo nunca lo abre), y corrobora que no haya errores
-	if(!Existe(NombreArch) || (archPartida = fopen(NombreArch, "rb")) == NULL)
+	if(!Existe(nombreArchivo) || (archPartida = fopen(nombreArch, "rb")) == NULL)
 		return 0;
 	
 	
 	//Lee los datos del archivo y carga las variables
-	fread(&ModoJuego, sizeof(ModoJuego), 1, archPartida);
-	fread(&ProximoTurno, sizeof(ProximoTurno), 1, archPartida);
-	fread(&_DIM, sizeof(_DIM), 1, archPartida);
+	juego -> nombreArch = nombreArch;
+	fread(&(juego -> modoJuego), sizeof(juego -> modoJuego), 1, archPartida);
+	fread(&(juego -> proximoTurno), sizeof(juego -> proximoTurno), 1, archPartida);
+	fread(&(juego -> tableroJuego.dim), sizeof(dim), 1, archPartida);
 	
-	Tablero = malloc(_DIM * sizeof(char*));
+	juego -> tableroJuego.tab = malloc(dim * sizeof(char*));
 	
-	for(i = 0; i < _DIM; i++)
+	for(i = 0; i < dim; i++)
 	{	
-		Tablero[i] = malloc(_DIM);
-		fread(Tablero[i], _DIM, 1, archPartida);
+		juego -> tableroJuego.tab[i] = malloc(dim);
+		fread(juego -> tableroJuego.tab[i], dim, 1, archPartida);
 	}
 	
 	//Cierra el archivo
