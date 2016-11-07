@@ -1,5 +1,6 @@
 #ifndef _buttonsAndScissorsBack_h
 #define _buttonsAndScissorsBack_h
+typedef char ** TipoTablero;
 typedef struct 
 {
 	int fila;
@@ -29,6 +30,10 @@ typedef struct
 	int proximoTurno;
 }tJuego;
 
+void CalcularDeltasFilCol(movimiento * mov);
+int DireccionCorte(movimiento * mov);
+int EfectuarCorte(TipoTablero tabler, movimiento * mov);
+
 /*Recibe el tablero de Juego y la direccion de donde se almacena el puntaje
 **elije aleatoriamente una estrategia(movimiento con minima cantidad de botones o con maxima cantidad de botones)
 **y de acuerdo a la estrategia ya sea en el maximo o el minimo de todos los que tengan esa cantidad de botones elije uno aleatoriamente
@@ -41,6 +46,6 @@ void jugarAi(tablero* t,int *puntos);
 */
 int buscdir(tablero t,int modo,int fila,int columna,int incfil,int inccol,int *botones);
 /*Recibe el tablero y devuelve en su nombre 1 si no hay mas jugadas posibles para el jugador siguiente y 0 en caso contrario*/
-int hayGanador(tablero t)
+int hayGanador(tablero t);
 
 #endif
