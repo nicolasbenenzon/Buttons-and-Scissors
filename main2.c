@@ -20,8 +20,6 @@ typedef struct
 	int columna;
 }tCoordenada;
 
-int _DIM;
-
 int JugadaValida(tablero * t, movimiento * mov, int * error);
 int ExistePosicion(tCoordenada coordenada, int dim);
 int EstaVacio(TipoTablero tablero, tCoordenada coordenada);
@@ -33,13 +31,14 @@ void ReportarErrorPosicion(tCoordenada coordenada);
 void ReportarErrorEspacioVacio(tCoordenada coordenada);
 void ReportarErrorLineaRecta();
 void ReportarErrorVariedades();
-void ElegirDim();
-void Jugar();
-void Jugar2P();
+void ElegirDim(tablero * t);
+void ElegirDimr(tablero * t);
+void Jugar(int opcion,tablero t);
+void Jugar2P(tablero t,int* puntos,int jugador);
 void Menu();
 void ImprimirMenu();
 void Salir();
-void LeerComando();
+void LeerComando(tablero * t);
 int Existe(char * archivo);
 int Guardar(tJuego * juego);
 int CargarArchivo(char * nombreArchivo, tJuego * juego);
@@ -111,10 +110,9 @@ main(void)
 	return 0;*/
 }
 
-void LeerComando()
+void LeerComando(tablero * t)
 {
-	tCoordenada origen;
-	tCoordenada destino;
+	movimiento mov;
 	char cmd[5];
 	char name[48];
 	int done = 0;
@@ -171,26 +169,26 @@ void LeerComando()
 			{
 				int error;
 				int direccionCorte = -1;
-				origen.fila = F1;
-				origen.columna = C1;
-				destino.fila = F2;
-				destino.columna = C2;
-				if((direccionCorte = jugadaValida(Tablero, origen, destino, _DIM, &error)) != -1) 
+				mov.inicio.fila = F1;
+				mov.inicio.columna = C1;
+				mov.final.fila = F2;
+				mov.final.columna = C2;
+				if((direccionCorte = JugadaValida(t, &mov, &error)) != -1) 
 				{
-					efectuarCorte(Tablero, origen, destino, direccionCorte);
+					EfectuarCorte(t->tab, &mov);
 					done = 1;
 				}
 				else
 				{
 					switch(error)
 					{
-						case 1: ReportarErrorPosicion(origen);
+						case 1: ReportarErrorPosicion(mov.inicio);
 							break;
-						case 2: ReportarErrorPosicion(destino);
+						case 2: ReportarErrorPosicion(mov.final);
 							break;
-						case 3: ReportarErrorEspacioVacio(destino);
+						case 3: ReportarErrorEspacioVacio(mov.final);
 							break;
-						case 4: ReportarErrorEspacioVacio(origen);
+						case 4: ReportarErrorEspacioVacio(mov.inicio);
 							break;
 						case 5: ReportarErrorLineaRecta();
 							break;
@@ -239,25 +237,25 @@ void Jugar(int opcion,tablero t){
 	
 /*tablero es un struct en front.c*/
 void Jugar2P(tablero t,int* puntos,int jugador){
-	LeerComando(puntos);
+	LeerComando(&t);
 	
 }
 
-void ElegirDim()
+void ElegirDim(tablero * t)
 {
-	ElegirDimr();
-	if(GenerarTablero(_DIM))
+	ElegirDimr(t);
+	if(GenerarTablero(t->dim))
 		//imprimir_Error
 	
 	/*cargo struct o parametros
 	*/
 }
-void ElegirDimr(){
-	/*do _DIM = getint("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
-	while(_DIM < 5 || _DIM > 30);*/
+void ElegirDimr(tablero * t){
+	/*do t->dim = getint("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
+	while(t->dim < 5 || t->dim > 30);*/
 	printf("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): "); // MÉTODO RECURSIVO
-	scanf("%d", &_DIM);
-	if(_DIM < 5 || _DIM > 30) ElegirDimr();
+	scanf("%d", t->dim);
+	if(t->dim < 5 || t->dim > 30) ElegirDimr();
 }
 
 void Salir(){
