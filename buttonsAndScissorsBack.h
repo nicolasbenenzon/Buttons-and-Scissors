@@ -28,6 +28,8 @@ typedef struct
 	char * nombreArch;
 	int modoJuego;
 	int proximoTurno;
+	int puntosJug1;
+	int puntosJug2;
 }tJuego;
 
 void CalcularDeltasFilCol(movimiento * mov);
