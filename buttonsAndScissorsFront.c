@@ -230,11 +230,13 @@ void ImprimirMenu()
 
 void jugar(tJuego* juego)
 {
-	int jugador1=1,jugador2=2,puntosjug1=0,puntosjug2=0,termino;
+	juego->puntosJug1=0;
+	juego->puntosJug2=0;
+	int jugador1=1,jugador2=2,termino;
 	juego->proximoTurno=rand()%2;
 	do
 	{
-		printf("Botones J1: %d, J2:%d\n\n",puntosjug1,puntosjug2);
+		printf("Botones J1: %d, J2:%d\n\n",juego->puntosJug1,juego->puntosJug2);
 		imprimir(juego->tableroJuego);
 		printf("Turno jugador %d\n",(juego->proximoTurno==0)?jugador1:jugador2);
 		if((termino=hayGanador(juego->tableroJuego)))//por si empieza con tablero vacio
@@ -242,7 +244,7 @@ void jugar(tJuego* juego)
 		else
 		{
 			if(juego->proximoTurno==1&&juego->modoJuego==1)
-				jugarAi(&(juego->tableroJuego),&puntosjug2);
+				jugarAi(&(juego->tableroJuego),&(juego->puntosJug2));
 			/*else if(turno==1)
 				Jugar2P(t,&puntosjug2);
 			else
