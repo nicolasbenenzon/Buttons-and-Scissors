@@ -77,10 +77,10 @@ void LeerComando(tablero * t){
 						//scanf("%s%c", name, &aux);
 						if(strlen(name) > 0 && name[0] != '\n') 
 						{
-								//Guardar(name);
+								Guardar(name);
 								printf("El archivo se guardo exitosamente.\nHasta luego\n");
 								done = 1;
-								//Salir();
+								Salir();
 							
 						}
 						else printf("Debe ingresar un nombre válido de archivo.\n");
@@ -88,7 +88,7 @@ void LeerComando(tablero * t){
 				}
 				else if(strcmp(cmd, "N\n") == 0)
 				{
-					//Salir();
+					Salir();
 					printf("back to menu\n");
 					done = 1;
 				}
@@ -106,7 +106,7 @@ void LeerComando(tablero * t){
 			{
 				if(strlen(name) > 0) 
 				{
-					//Guardar(name);
+					Guardar(name);
 					printf("El archivo se guardo exitosamente.\n");
 				}
 				else printf("Debe ingresar un nombre válido de archivo.\n");
@@ -119,12 +119,34 @@ void LeerComando(tablero * t){
 				mov.inicio.columna = C1;
 				mov.final.fila = F2;
 				mov.final.columna = C2;
-				printf("F1=%d\tC1=%d\nF2=%d\tC2=%d\n",F1,C1,F2,C2);
-				done = 1;
+				if((direccionCorte = JugadaValida(t, &mov, &error)) != -1) 
+				{
+					EfectuarCorte(t->tab, &mov);
+					done = 1;
+					printf("F1=%d\tC1=%d\nF2=%d\tC2=%d\n",F1,C1,F2,C2);
+
+				}
+				else
+				{
+					switch(error)
+					{
+						case 1: ReportarErrorPosicion(mov.inicio);
+							break;
+						case 2: ReportarErrorPosicion(mov.final);
+							break;
+						case 3: ReportarErrorEspacioVacio(mov.final);
+							break;
+						case 4: ReportarErrorEspacioVacio(mov.inicio);
+							break;
+						case 5: ReportarErrorLineaRecta();
+							break;
+						case 6: ReportarErrorVariedades();
+							break;
+					}
+				} 
 			}
 			else printf("Comando inválido.\n");
 		}
 	}
 	while(done == 0);
-//jugadavalida
 }
