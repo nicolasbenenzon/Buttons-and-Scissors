@@ -6,7 +6,6 @@
 #define MAX_NAME 48
 
 #define LIMPIA_BUFFER() while(getchar() != '\n')
-#define elseReadCmd(a) { LIMPIA_BUFFER(); printf(a);}
 
 typedef char ** TipoTablero;
 typedef struct 
