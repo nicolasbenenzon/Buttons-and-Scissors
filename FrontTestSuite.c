@@ -1,51 +1,61 @@
 #include <stdio.h>
-#include "buttonsAndScissorsFront.h"
+#include <stdlib.h>
 #include "CuTest.h"
+#include "buttonsAndScissorsBack.h"
+#include "buttonsAndScissorsFront.h"
+#include "FrontTestSuite.h"
 
-/*void strLenTest(CuTest * cuTest);
 
-CuSuite * 
-strTestSuite(void) 
+
+void lecturaTableroInicialTest(CuTest * cuTest)
 {
-	CuSuite * cuSuite = CuSuiteNew();
-	SUITE_ADD_TEST(cuSuite, strLenTest);
-	return cuSuite;
+	/*actual representa la dimension del tablero que va a leer
+	** si devuelve 0 no hubo error, 1 si no existe el archivo y 2 si hay un error de formato
+	*/
+	tablero t;
+	t.dim= 5;
+	int actual = GenerarTablero(&t);
+	int esperado = 0;
+	CuAssertIntEquals_Msg(cuTest,"El archivo era correcto y encontro error.\n", esperado, actual);
+	t.dim= 6;
+	actual = GenerarTablero(&t); 
+	esperado = 2;
+	CuAssertIntEquals_Msg(cuTest,"Deberia haber devuelto error de formato.\n", esperado, actual);
+	t.dim= 7;
+	actual = GenerarTablero(&t);
+	esperado = 1;
+	CuAssertIntEquals_Msg(cuTest,"Deberia haber devuelto que no existe el archivo.\n", esperado, actual);
+	t.dim= 10;
+	actual = GenerarTablero(&t);
+	esperado = 1;
+	CuAssertIntEquals_Msg(cuTest,"Deberia haber devuelto que no existe el archivo.\n", esperado, actual);
+	t.dim= 15;
+	actual = GenerarTablero(&t);
+	esperado = 0;
+	CuAssertIntEquals_Msg(cuTest,"El archivo era correcto y encontro error.\n", esperado, actual);
+	
 }
 
-void 
-strLenTest(CuTest * cuTest) 
-{
-	char * entrada = "Hola Mundo!";
-	int actual = strlen(entrada);
-	int esperado = 10;
-	char * mensaje = "Los valores de las longitudes no coinciden";
-	CuAssertIntEquals_Msg(cuTest, mensaje, esperado, actual);
-}*/
-void CargarArchivoTest(CuTest * cuTest);
-void GuardarTest(CuTest * cuTest);
 
-CuSuite * 
-FrontTestSuite(void) 
+void CargarArchivoTest(CuTest * cuTest) 
 {
-	CuSuite * cuSuite = CuSuiteNew();
-	SUITE_ADD_TEST(cuSuite, CargarArchivoTest);
-	SUITE_ADD_TEST(cuSuite, GuardarTest);
-	return cuSuite;
-}
-
-void 
-CargarArchivoTest(CuTest * cuTest) 
-{
-	char * nombreArchivo = "PartidoXXX";
 	tJuego juego;
-	int actual = CargarArchivo(nombreArchivo, &juego);
+	juego.nombreArch = "PartidoXXX";
+	int actual = CargarArchivo(&juego);
 	int esperado = 0;
 	char * mensaje = "Los valores de respuesta no coinciden";
 	CuAssertIntEquals_Msg(cuTest, mensaje, esperado, actual);
+
+	juego.nombreArch = "TestPartidaGuardada";
+	actual = CargarArchivo(&juego);
+	esperado = 1;
+	mensaje = "Los valores de respuesta no coinciden";
+	CuAssertIntEquals_Msg(cuTest, mensaje, esperado, actual);
+
 }
 
-void 
-GuardarTest(CuTest * cuTest) 
+
+void GuardarTest(CuTest * cuTest) 
 {
 	tJuego juego;
 	juego.tableroJuego.tab = malloc(5 * sizeof(char*));
@@ -60,7 +70,8 @@ GuardarTest(CuTest * cuTest)
 	juego.tableroJuego.tab[4][4] = 'B'; juego.tableroJuego.tab[4][1] = '0'; juego.tableroJuego.tab[4][2] = '0'; juego.tableroJuego.tab[4][3] = '0'; juego.tableroJuego.tab[4][4] = '0';
 	
 	juego.tableroJuego.dim = 5;
-	juego.nombreArch = "Partido1";
+	juego.nombreArch=malloc(9*sizeof(char));
+	sprintf(juego.nombreArch, "Partido1");
 	juego.modoJuego = 1;
 	juego.proximoTurno = 1;
 
@@ -68,4 +79,15 @@ GuardarTest(CuTest * cuTest)
 	int esperado = 1;
 	char * mensaje = "Los valores de respuesta no coinciden";
 	CuAssertIntEquals_Msg(cuTest, mensaje, esperado, actual);
+}
+
+
+
+CuSuite * FrontTestSuite()
+{
+	CuSuite * cuSuite = CuSuiteNew();
+	SUITE_ADD_TEST(cuSuite, lecturaTableroInicialTest);
+	SUITE_ADD_TEST(cuSuite, CargarArchivoTest);
+	SUITE_ADD_TEST(cuSuite, GuardarTest);
+	return cuSuite;
 }
