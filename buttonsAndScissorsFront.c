@@ -3,9 +3,43 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <sys/stat.h>
 #include "buttonsAndScissorsBack.h"
 #include "buttonsAndScissorsFront.h"
 #define LIMPIABUFFER() while(getchar()!='\n')
+#define MAX_LONG 256
+#define MAX_NAME 48
+
+void botonesyTijeras(void)
+{
+	tJuego juego;
+	int opcion,error;
+	do
+	{
+		opcion=Menu();
+		if(opcion==1||opcion==2)
+    	{
+    		juego.modoJuego=opcion-1;
+    		do
+    		{
+    			juego.proximoTurno=rand()%2;
+	
+    			ElegirDim(&(juego.tableroJuego));
+    			if((error=GenerarTablero(&(juego.tableroJuego)))==0)
+		  			jugar(&juego);
+        		else
+					imprimirErrorTablero(error);
+			}while(error);
+        
+    	}
+    	else if(opcion==3)
+    	{
+    		CargarArchivo(&juego);
+    		jugar(&juego);
+    	}
+    }while(opcion!=4);
+	
+}
 
 /* lee tableros de un archivo elije uno aleatoriamente y lo carga en el tablero del juego*/
 int GenerarTablero(tablero* t)
@@ -34,12 +68,16 @@ int GenerarTablero(tablero* t)
 		{
 			if(i==elegido)
 				//t->tab=malloc(sizeof(char*)*(t->dim));
-				validarMemoria((void**)(&(t->tab)),sizeof(char*)*(t->dim));
+				if(validarMemoria((void**)(&(t->tab)),sizeof(char*)*(t->dim)))
+					return 3;
 			for(j=0;j<t->dim&&(!salir);j++)
 			{
 				if(i==elegido)
-					//(t->tab)[j]=malloc(sizeof(char)*(t->dim));
-					validarMemoria((void**)((t->tab)+j),sizeof(char)*(t->dim));
+				{	//(t->tab)[j]=malloc(sizeof(char)*(t->dim));
+					(t->tab)[j]=NULL;
+					if(validarMemoria((void**)((t->tab)+j),sizeof(char)*(t->dim)))
+						return 3;
+				}
 				for(k=0;k<t->dim&&(!salir);k++)
 				{
 					c=fgetc(arch);
@@ -96,23 +134,10 @@ int GenerarTablero(tablero* t)
 				free(t->tab);
 			}
 		}
-
+		fclose(arch);
 		return salir;
 	}
 	
-}
-
-/*Recibe la direccion de memoria del puntero al que quiero asignarle memoria y la cantidad de bytes que quiero asignarle*/
-void validarMemoria(void **punt,unsigned int bytes)
-{
-	void *aux;
-	aux=realloc(*punt,bytes);
-	if(aux==NULL)
-	{
-		printf("Espacio insuficiente.\n");
-		exit(0);
-	}
-	*punt=aux;
 }
 
 
@@ -125,6 +150,10 @@ void imprimirErrorTablero(int error)
 						break;
 		case 2: 
 						printf("Error de Formato.\n");
+						break;
+		case 3:
+						printf("Error de memoria.\n");
+						exit(0);
 						break;
 	}
 }	
@@ -230,10 +259,10 @@ void ImprimirMenu()
 
 void jugar(tJuego* juego)
 {
+	int jugador1=1,jugador2=2,termino;
 	juego->puntosJug1=0;
 	juego->puntosJug2=0;
-	int jugador1=1,jugador2=2,termino;
-	juego->proximoTurno=rand()%2;
+
 	do
 	{
 		printf("Botones J1: %d, J2:%d\n\n",juego->puntosJug1,juego->puntosJug2);
@@ -244,16 +273,266 @@ void jugar(tJuego* juego)
 		else
 		{
 			if(juego->proximoTurno==1&&juego->modoJuego==1)
-				jugarAi(&(juego->tableroJuego),&(juego->puntosJug2));
-			/*else if(turno==1)
-				Jugar2P(t,&puntosjug2);
+			{	if(jugarAi(&(juego->tableroJuego),&(juego->puntosJug2))==1)
+				{
+					printf("Error de memoria.\n");
+					exit(0);
+				}
+			}
+			else if(juego->proximoTurno==1)
+				termino=jugar2P(juego);
 			else
-				Jugar2P(t,&puntosjug1);*/
-			//turno=(turno+1)%2;
-			if((termino=hayGanador(juego->tableroJuego)))//si no hay mas jugadas posibles o si quedo vacio el tablero
-				printf("El ganador es el jugador %d!!!\n",(juego->proximoTurno==0)?jugador1:jugador2);
-			else
-			juego->proximoTurno=(juego->proximoTurno+1)%2;
+				termino=jugar2P(juego);
+			if(!termino)
+			{
+				if((termino=hayGanador(juego->tableroJuego)))//si no hay mas jugadas posibles o si quedo vacio el tablero
+					printf("El ganador es el jugador %d!!!\n\n\n",(juego->proximoTurno==0)?jugador1:jugador2);
+				else
+					juego->proximoTurno=(juego->proximoTurno+1)%2;
+			}
 		}
 	}while(!termino);
+	liberarTablero(juego);
+	//botonesyTijeras();
+}
+void ElegirDim(tablero * t)
+{
+	char c;
+	do
+	{
+		c=0;
+		printf("Ingrese la dimensión del tablero (Mínima: 5 (5x5), Máxima: 30 (30x30)): ");
+		scanf("%d%c", &(t->dim),&c);
+		if(c!='\n')
+			LIMPIABUFFER();
+	}while(t->dim < 5 || t->dim > 30);
+}
+
+void liberarTablero(tJuego * juego)
+{
+	int i;
+	for(i=0;i<juego->tableroJuego.dim;i++)
+	{
+			free(juego->tableroJuego.tab[i]);
+	}
+	free(juego->tableroJuego.tab);
+}
+
+
+int jugar2P(tJuego* juego)
+{
+	int resp;
+	do
+	{
+		resp=LeerComando(juego);
+		
+		if(resp==1||resp==3)//si es salir y guardar o guardar
+		{
+			if(Guardar(juego))
+				printf("El archivo se guardo exitosamente.\n");
+		}
+		
+	}while(resp==3);//si puso solo guardar
+	return resp==1||resp==2;
+}
+
+
+int LeerComando(tJuego * juego)
+{
+	movimiento mov;
+	char cmd[MAX_LONG];
+	char name[MAX_NAME] = {0};
+	int done = 0;
+	int F1, C1, F2, C2,longitud;
+	char aux;
+	do
+	{
+		printf("Ingrese el comando: ");
+		fgets(cmd, MAX_LONG, stdin);
+		if(strcmp(cmd, "quit\n") == 0)
+		{
+			printf("¿Está seguro que quiere salir (Y/N)? ");
+			fgets(cmd, MAX_LONG, stdin);
+			if(strcmp(cmd, "Y\n") == 0)
+			{
+				printf("¿Desea guardar la partida antes de salir (Y/N)? ");
+				fgets(cmd, MAX_LONG, stdin);
+				if(strcmp(cmd, "Y\n") == 0)
+				{
+					
+						printf("Ingrese el nombre del archivo: ");//falta validar nombre con espacio
+						fgets(name, MAX_NAME, stdin);
+						sscanf(name,"%s",name);
+						if((longitud=strlen(name)) > 0 && name[0] != '\n') 
+						{
+								//juego->nombreArch=name;
+								juego->nombreArch=malloc(sizeof(char)*(longitud+1));
+								//strcpy(juego->nombreArch,name);
+								sprintf(juego->nombreArch,"%s",name);
+								done = 1;
+						}
+						else printf("Debe ingresar un nombre válido de archivo.\n");
+					
+				}
+				else if(strcmp(cmd, "N\n") == 0)
+				{
+					done = 2;
+				}
+				else
+					printf("Comando invalido.\n");
+			}
+			else if(strcmp(cmd, "N\n") != 0)
+			{
+				printf("Comando invalido.\n");
+			}
+		}
+		else
+		{
+			if(sscanf(cmd, "save %s%c", name, &aux) == 2 && aux == '\n')
+			{
+				if((longitud=strlen(name)) > 0) 
+				{
+					juego->nombreArch=malloc(sizeof(char)*(longitud+1));
+					//strcpy(juego->nombreArch,name);
+					sprintf(juego->nombreArch,"%s",name);
+					done = 3;
+				}
+				else printf("Debe ingresar un nombre válido de archivo.\n");
+			}
+			else if(sscanf(cmd, "[%d,%d][%d,%d]%c", &F1, &C1, &F2, &C2, &aux) == 5 && aux == '\n')
+			{
+				int error,puntos;
+				int direccionCorte = -1;
+				mov.inicio.fila = F1;
+				mov.inicio.columna = C1;
+				mov.final.fila = F2;
+				mov.final.columna = C2;
+				printf("f1=%d, c1=%d\nF2=%d,C2=%d\n",F1,C1,F2,C2);
+				if((direccionCorte = JugadaValida(&(juego->tableroJuego), &mov, &error)) != -1) 
+				{
+					puntos=EfectuarCorte(juego->tableroJuego.tab, &mov);
+					if(juego->proximoTurno==0)
+						juego->puntosJug1+=puntos;
+					else
+						juego->puntosJug2+=puntos;
+
+					done = 4;
+					printf("F1=%d\tC1=%d\nF2=%d\tC2=%d\n",F1,C1,F2,C2);
+
+				}
+				else
+				{
+					switch(error)
+					{
+						case 1: /*ReportarErrorPosicion(mov.inicio);
+							break;*/
+						case 2: /*ReportarErrorPosicion(mov.final);
+							break;*/
+						case 3: /*ReportarErrorEspacioVacio(mov.final);
+							break;*/
+						case 4: /*ReportarErrorEspacioVacio(mov.inicio);
+							break;*/
+						case 5: /*ReportarErrorLineaRecta();
+							break;*/
+						case 6: /*ReportarErrorVariedades();
+							break;*/
+						printf("Error\n");
+					}
+				} 
+			}
+			else printf("Comando inválido.\n");
+		}
+	}
+	while(done == 0);
+	return done;
+}
+
+int Guardar(tJuego * juego)
+{
+	int i;
+	int dim = juego -> tableroJuego.dim; //Guarda la dirección del tablero en una variable auxiliar
+	//printf("%s",juego->nombreArch);
+	//Crea el archivo con el nombre nombreArch
+	FILE * archPartida;
+    	//archPartida = fopen(juego -> nombreArch, "wb");
+	archPartida = fopen(juego->nombreArch, "wb");
+	
+
+	//Se fija que no haya habido errores
+	if(archPartida == NULL)
+        return 0;
+	
+	//Escribe los datos de la partida en el archivo
+    fwrite(&(juego -> modoJuego), sizeof(juego -> modoJuego), 1, archPartida); //Modo de Juego (2P o Jugador vs. Computadora)
+	fwrite(&(juego -> proximoTurno), sizeof(juego -> proximoTurno), 1, archPartida); //De quién es el próximo turno
+	fwrite(&dim, sizeof(dim), 1, archPartida); //Dimensión del tablero
+	for(i = 0; i < dim; i++)
+		fwrite(juego -> tableroJuego.tab[i], dim, 1, archPartida); //Escribe cada fila del tablero en el archivo
+	
+	
+    	//Una vez finalizada la escritura, cierra el archivo
+	fclose(archPartida);
+	
+	return 1;
+}
+
+void leerNombre(tJuego* juego)
+{
+	char c;
+	if(validarMemoria((void**)(&(juego->nombreArch)),sizeof(char)*MAX_NAME))
+	{
+		printf("Error de memoria.\n");
+	}
+	
+	do
+	{
+		c=0;
+		printf("Ingrese el nombre del archivo(sin espacios) que quiere cargar:\n");
+		scanf("%s%c",juego->nombreArch,&c);
+		if(c!='\n')
+		{
+			LIMPIABUFFER();
+			printf("El nombre del archivo debe estar seguido por enter.\n");
+		}
+	}while(c!='\n');
+	
+}
+
+/*Carga el archivo*/
+int CargarArchivo(tJuego * juego)
+{
+	
+	int i;
+	FILE * archPartida;
+	int dim = juego -> tableroJuego.dim; //Guarda la dirección del tablero en una variable auxiliar
+	leerNombre(juego);
+	//Pregunta si existe el archivo, y en ese caso lo abre en modo lectura 
+	//(por ser lazy, si no existe el archivo nunca lo abre), y corrobora que no haya errores
+	if(!Existe(juego->nombreArch) || (archPartida = fopen(juego->nombreArch, "rb")) == NULL)
+		return 0;
+	
+	
+	//Lee los datos del archivo y carga las variables
+	//juego -> nombreArch = nombreArch;
+	fread(&(juego -> modoJuego), sizeof(juego -> modoJuego), 1, archPartida);
+	fread(&(juego -> proximoTurno), sizeof(juego -> proximoTurno), 1, archPartida);
+	fread(&(juego -> tableroJuego.dim), sizeof(dim), 1, archPartida);
+	
+	juego -> tableroJuego.tab = malloc(juego->tableroJuego.dim * sizeof(char*));
+	
+	for(i = 0; i < juego->tableroJuego.dim; i++)
+	{	
+		juego -> tableroJuego.tab[i] = malloc(juego->tableroJuego.dim);
+		fread(juego -> tableroJuego.tab[i], juego->tableroJuego.dim, 1, archPartida);
+	}
+	
+	//Cierra el archivo
+	fclose(archPartida);
+	return 1;
+}
+
+int Existe(char *archivo)
+{
+	struct stat buffer;
+	return (stat(archivo, &buffer) == 0);
 }

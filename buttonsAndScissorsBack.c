@@ -26,11 +26,11 @@ int buscdir(tablero t,int modo,int fila,int columna,int incfil,int inccol,int *b
 }
 
 /*Elije al azar una de las dos estrategias(maxima cantidad de botones y minima cantidad de botes) y elige el movimiento aleatoriamente de todos los posibles*/
-void jugarAi(tablero* t,int *puntos)
+int jugarAi(tablero* t,int *puntos)
 {
 	int direcciones[4][2]={{-1,0},{-1,1},{0,1},{1,1}};
 	int i,j,k,cant=0,botones,dimension=0,maximo=2,modo=rand()%2,blancos;
-	movimiento * cortes=NULL,*aux,resp;
+	movimiento * cortes=NULL,resp;
 	for(i=0;i<t->dim;i++)
 	{
 		for(j=0;j<t->dim;j++)
@@ -63,12 +63,14 @@ void jugarAi(tablero* t,int *puntos)
 					{
 						if(cant%BLOQUE==0)
 						{
-							aux=realloc(cortes,(cant+BLOQUE)*sizeof(*cortes));
+							/*aux=realloc(cortes,(cant+BLOQUE)*sizeof(*cortes));
 							if(aux!=NULL)
 							{
 								cortes=aux;
 							}
-							else exit(0);
+							else exit(0);*/
+							if(validarMemoria((void**)&cortes,(cant+BLOQUE)*sizeof(*cortes)))
+								return 1;
 						}
 						cortes[dimension].inicio.fila=i;
 						cortes[dimension].inicio.columna=j;
@@ -83,14 +85,18 @@ void jugarAi(tablero* t,int *puntos)
 			}
 		}
 	}
-	cortes=realloc(cortes,sizeof(*cortes)*dimension);
+	//cortes=realloc(cortes,sizeof(*cortes)*dimension);
+	if(validarMemoria((void**)&cortes,sizeof(*cortes)*dimension))
+		return 1;
 	resp=cortes[rand()%dimension];
+	free(cortes);
 	resp.direccion=DireccionCorte(&resp);
 	CalcularDeltasFilCol(&resp);
 	printf("fila1=%d\tcolumna1=%d\nfila2=%d\tcolumna2=%d\n",resp.inicio.fila,resp.inicio.columna,resp.final.fila,resp.final.columna);
 	*puntos=*puntos+EfectuarCorte(t->tab,&resp);
-	
+	return 0;
 }
+
 /*Devuelve 1 si no hay mas jugadas posibles para el jugador siguiente y 0 en caso contrario*/
 int hayGanador(tablero t)
 {
@@ -151,11 +157,15 @@ int DireccionCorte(movimiento * mov)
 int EfectuarCorte(TipoTablero tabler, movimiento * mov)
 {
 	int fil, col;
-	int botonesCortados = 2; //Lo inicializo en 2 porque de entrada corto los botones de origen y destino
+	int botonesCortados = 1; //Lo inicializo en 1 porque de entrada corto el boton de origen
 	
 	//Corto los botones de inicio y final
 	tabler[(mov -> inicio).fila][(mov -> inicio).columna] = '0';
-	tabler[(mov -> final).fila][(mov -> final).columna] = '0';
+	if(tabler[(mov -> final).fila][(mov -> final).columna]!='0')//por si es llamado por la funcion AI en la cual la ultima cordenada puede ser '0'
+	{	
+		tabler[(mov -> final).fila][(mov -> final).columna] = '0';
+		botonesCortados++;
+	}
 	
 	//Calculo el sentido en que hago el corte, y corto contando la cantidad de botones cortados
 	//CalcularDeltasFilCol(direccion, &deltaFil, &deltaCol);
@@ -217,3 +227,111 @@ void CalcularDeltasFilCol(movimiento * mov)
 		break;
 	}
 }	
+
+/*Recibe la direccion de memoria del puntero al que quiero asignarle memoria y la cantidad de bytes que quiero asignarle*/
+int validarMemoria(void **punt,unsigned int bytes)
+{
+	void *aux;
+	aux=realloc(*punt,bytes);
+	if(aux==NULL)
+		return 1;
+	*punt=aux;
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+int JugadaValida(tablero * t, movimiento * mov, int * error)
+{
+	mov -> direccion = -1;
+	//int botonesCortados = 0;
+	
+	//Verifico que exista la posición de origen, en caso negativo reporta el error y retorna 0
+	if(ExistePosicion(mov -> inicio, t -> dim))
+	{
+		//En caso de existir la posición de origen, ahora verifico si existe la posición de destino, en caso negativo reporta el error y retorna 0
+		if(ExistePosicion(mov -> final, t -> dim))
+		{
+			//Ahora verifico que tanto en el origen como en el destino haya algún botón, en caso negativo reporta el error y retorna 0
+			if(!EstaVacio(t -> tab, mov -> inicio) && !EstaVacio(t -> tab, mov -> final))
+			{
+				//Luego verifico si el corte determinado por el origen y el destino forma efectivamente una línea recta
+				if((mov -> direccion = DireccionCorte(mov)) != -1)
+				{
+					//Finalmente, se valida que no haya otras variedades de botones en esa dirección
+					if(! HayOtrasVariedades(t -> tab, mov))
+					{
+						//En caso de haber cumplido con todos los requisitos, se efectúa el corte y guarda la cantidad de botones cortados
+						//botonesCortados = EfectuarCorte(tablero, origen, destino, direccion);
+						return mov -> direccion;
+					}
+					else
+					{
+						*error = 6;//ReportarErrorVariedades(); //Como hay más de una variedad de botones en esa dirección, reporta el error
+					}
+				}
+				else
+				{
+					*error = 5;//ReportarErrorLineaRecta(); //Como el origen y destino no forman una línea recta, reporta el error
+				}
+			}
+			else
+			{
+				//Si alguno de las 2 coordenadas es un espacio vacio entonces ve cuál es y reporta el error
+				if(EstaVacio(t -> tab, mov -> inicio)) *error = 3;//ReportarErrorEspacioVacio(origen);
+				else *error = 4;//ReportarErrorEspacioVacio(destino);
+			}
+		}
+		else
+		{
+			//ReportarErrorPosicion(destino); //Como no existe la posición de destino, reporta el error
+			*error = 2;
+		}
+	}
+	else
+	{
+		//ReportarErrorPosicion(origen); //Como no existe la posición de origen, reporta el error
+		*error = 1;
+	}
+	
+	return -1;
+}
+
+int ExistePosicion(tCoordenada coordenada, int dim)
+{
+	return (coordenada.fila >= 0 && coordenada.fila < dim && coordenada.columna >= 0 && coordenada.columna < dim);
+}
+
+int EstaVacio(TipoTablero tablero, tCoordenada coordenada)
+{
+	return (tablero[coordenada.fila][coordenada.columna] == '0');
+}
+
+int HayOtrasVariedades(TipoTablero tablero, movimiento * mov)
+{
+	int fil, col, hayBotonDistinto = 0;
+	char botonOrigen = tablero[(mov -> inicio).fila][(mov -> inicio).columna]; //Guardo el botón que está en inicio
+	char botonDestino = tablero[(mov -> final).fila][(mov -> final).columna]; //Guardo el botón que está en final
+	
+	//Primero verifico que en inicio y final haya el mismo botón, porque si son distintos, no tiene sentido recorrer todo el camino, ya se sabe que las variedades son distintas
+	if(botonOrigen == botonDestino)
+	{
+		//Calculo el sentido en que hago el recorrido(se guarda en deltaFil y deltaCol), y recorro
+		CalcularDeltasFilCol(mov);
+		for(fil = (mov -> inicio).fila + mov -> deltaFil, col = (mov -> inicio).columna + mov -> deltaCol; fil != (mov -> final).fila && col != (mov -> final).columna && !hayBotonDistinto; fil += mov -> deltaFil, col += mov -> deltaCol)
+		{
+			if(tablero[fil][col] != botonOrigen && tablero[fil][col] != '0')
+				hayBotonDistinto = 1;
+		}
+		return hayBotonDistinto;
+	}
+	else 
+		return 1; //Si el destino y el origen tienen distintos botones, retorno 1
+}
