@@ -239,15 +239,6 @@ int validarMemoria(void **punt,unsigned int bytes)
 	return 0;
 }
 
-/*void liberarTablero(tJuego * juego)
-{
-	int i;
-	for(i=0;i<juego->tableroJuego.dim;i++)
-	{
-			free(juego->tableroJuego.tab[i]);
-	}
-	free(juego->tableroJuego.tab);
-}*/
 
 void liberarTablero(tablero * t)
 {

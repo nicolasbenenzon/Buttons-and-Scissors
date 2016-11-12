@@ -34,7 +34,15 @@ void botonesyTijeras(void)
     	}
     	else if(opcion==3)
     	{
-    		while(CargarArchivo(&juego)==0);
+    		int resp;
+    		do
+    		{
+    			juego.nombreArch=NULL;
+				leerNombre(&juego);
+				resp=CargarArchivo(&juego);
+				free(juego.nombreArch);
+			}while(resp==0);
+			
     		jugar(&juego);
     	}
     }while(opcion!=4);
@@ -493,15 +501,10 @@ int CargarArchivo(tJuego * juego)
 	int i;
 	FILE * archPartida;
 	int dim = juego -> tableroJuego.dim; //Guarda la dirección del tablero en una variable auxiliar
-	juego->nombreArch=NULL;
-	leerNombre(juego);
 	//Pregunta si existe el archivo, y en ese caso lo abre en modo lectura 
 	//(por ser lazy, si no existe el archivo nunca lo abre), y corrobora que no haya errores
 	if(!Existe(juego->nombreArch) || (archPartida = fopen(juego->nombreArch, "rb")) == NULL)
-	{	
-		free(juego->nombreArch);
 		return 0;
-	}
 	
 	//Lee los datos del archivo y carga las variables
 	fread(&(juego -> modoJuego), sizeof(juego -> modoJuego), 1, archPartida);
