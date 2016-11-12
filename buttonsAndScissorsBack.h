@@ -77,5 +77,9 @@ int hayGanador(tablero t);
 /*Recibe la direccion de memoria del puntero al que quiero asignarle memoria y la cantidad de bytes que quiero asignarle*/
 int validarMemoria(void **punt,unsigned int bytes);
 
+/*Recibe un puntero a la estructura juego y libera la memoria que se reservo para el tablero 
+**ya sea en CargarTablero como en GenerarTablero
+*/
+void liberarTablero(tablero * t);
 
 #endif

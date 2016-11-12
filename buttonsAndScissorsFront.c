@@ -34,7 +34,7 @@ void botonesyTijeras(void)
     	}
     	else if(opcion==3)
     	{
-    		CargarArchivo(&juego);
+    		while(CargarArchivo(&juego)==0);
     		jugar(&juego);
     	}
     }while(opcion!=4);
@@ -48,6 +48,7 @@ int GenerarTablero(tablero* t)
 	t->tab=NULL;
 	char * nombre=GenerarNombre(t->dim);
 	arch=fopen(nombre,"r");
+	free(nombre);
 	if(arch==NULL)
 		return 1;
 	else
@@ -129,9 +130,10 @@ int GenerarTablero(tablero* t)
 		{
 			if(t->tab!=NULL)
 			{
-				for(j=0;j<t->dim;j++)
+				/*for(j=0;j<t->dim;j++)
 					free((t->tab)[j]);
-				free(t->tab);
+				free(t->tab);*/
+				liberarTablero(t);
 			}
 		}
 		fclose(arch);
@@ -152,8 +154,7 @@ void imprimirErrorTablero(int error)
 						printf("Error de Formato.\n");
 						break;
 		case 3:
-						printf("Error de memoria.\n");
-						exit(0);
+						errorMemoria();
 						break;
 	}
 }	
@@ -163,13 +164,9 @@ char * GenerarNombre(int dimension)
 {
 	char *nombre=NULL;
 	//nombre=malloc(sizeof(*nombre)*6);
-	validarMemoria((void**)(&nombre),6);
-	if(nombre==NULL)
-	{
-		printf("No hay memoria suficiente para generar el archivo.\n");
-		return nombre;
-	}
-		sprintf(nombre,"%dx%d",dimension,dimension);
+	if(validarMemoria((void**)(&nombre),6))
+		errorMemoria();
+	sprintf(nombre,"%dx%d",dimension,dimension);
 	return nombre;
 }
 /*Imprime el tablero por salida estandar*/
@@ -275,8 +272,7 @@ void jugar(tJuego* juego)
 			if(juego->proximoTurno==1&&juego->modoJuego==1)
 			{	if(jugarAi(&(juego->tableroJuego),&(juego->puntosJug2))==1)
 				{
-					printf("Error de memoria.\n");
-					exit(0);
+					errorMemoria();
 				}
 			}
 			else if(juego->proximoTurno==1)
@@ -292,9 +288,10 @@ void jugar(tJuego* juego)
 			}
 		}
 	}while(!termino);
-	liberarTablero(juego);
-	//botonesyTijeras();
+	liberarTablero(&(juego->tableroJuego));
 }
+
+
 void ElegirDim(tablero * t)
 {
 	char c;
@@ -308,15 +305,7 @@ void ElegirDim(tablero * t)
 	}while(t->dim < 5 || t->dim > 30);
 }
 
-void liberarTablero(tJuego * juego)
-{
-	int i;
-	for(i=0;i<juego->tableroJuego.dim;i++)
-	{
-			free(juego->tableroJuego.tab[i]);
-	}
-	free(juego->tableroJuego.tab);
-}
+
 
 
 int jugar2P(tJuego* juego)
@@ -365,9 +354,10 @@ int LeerComando(tJuego * juego)
 						sscanf(name,"%s",name);
 						if((longitud=strlen(name)) > 0 && name[0] != '\n') 
 						{
-								//juego->nombreArch=name;
-								juego->nombreArch=malloc(sizeof(char)*(longitud+1));
-								//strcpy(juego->nombreArch,name);
+								juego->nombreArch=NULL;
+								if(validarMemoria((void**)(&(juego->nombreArch)),sizeof(char)*(longitud+1)))
+									errorMemoria();
+								//juego->nombreArch=malloc(sizeof(char)*(longitud+1));
 								sprintf(juego->nombreArch,"%s",name);
 								done = 1;
 						}
@@ -392,8 +382,10 @@ int LeerComando(tJuego * juego)
 			{
 				if((longitud=strlen(name)) > 0) 
 				{
-					juego->nombreArch=malloc(sizeof(char)*(longitud+1));
-					//strcpy(juego->nombreArch,name);
+					juego->nombreArch=NULL;
+					if(validarMemoria((void**)(&(juego->nombreArch)),sizeof(char)*(longitud+1)))
+						errorMemoria();
+					//juego->nombreArch=malloc(sizeof(char)*(longitud+1));
 					sprintf(juego->nombreArch,"%s",name);
 					done = 3;
 				}
@@ -407,7 +399,6 @@ int LeerComando(tJuego * juego)
 				mov.inicio.columna = C1;
 				mov.final.fila = F2;
 				mov.final.columna = C2;
-				printf("f1=%d, c1=%d\nF2=%d,C2=%d\n",F1,C1,F2,C2);
 				if((direccionCorte = JugadaValida(&(juego->tableroJuego), &mov, &error)) != -1) 
 				{
 					puntos=EfectuarCorte(juego->tableroJuego.tab, &mov);
@@ -417,8 +408,6 @@ int LeerComando(tJuego * juego)
 						juego->puntosJug2+=puntos;
 
 					done = 4;
-					printf("F1=%d\tC1=%d\nF2=%d\tC2=%d\n",F1,C1,F2,C2);
-
 				}
 				else
 				{
@@ -454,8 +443,8 @@ int Guardar(tJuego * juego)
 	(juego -> proximoTurno)++;
 	//Crea el archivo con el nombre nombreArch
 	FILE * archPartida;
-    	//archPartida = fopen(juego -> nombreArch, "wb");
-	archPartida = fopen(juego->nombreArch, "wb");
+    archPartida = fopen(juego->nombreArch, "wb");
+	free(juego->nombreArch);
 	
 
 	//Se fija que no haya habido errores
@@ -481,9 +470,7 @@ void leerNombre(tJuego* juego)
 {
 	char c;
 	if(validarMemoria((void**)(&(juego->nombreArch)),sizeof(char)*MAX_NAME))
-	{
-		printf("Error de memoria.\n");
-	}
+		errorMemoria();
 	
 	do
 	{
@@ -506,27 +493,32 @@ int CargarArchivo(tJuego * juego)
 	int i;
 	FILE * archPartida;
 	int dim = juego -> tableroJuego.dim; //Guarda la dirección del tablero en una variable auxiliar
+	juego->nombreArch=NULL;
 	leerNombre(juego);
 	//Pregunta si existe el archivo, y en ese caso lo abre en modo lectura 
 	//(por ser lazy, si no existe el archivo nunca lo abre), y corrobora que no haya errores
 	if(!Existe(juego->nombreArch) || (archPartida = fopen(juego->nombreArch, "rb")) == NULL)
+	{	
+		free(juego->nombreArch);
 		return 0;
-	
+	}
 	
 	//Lee los datos del archivo y carga las variables
-	//juego -> nombreArch = nombreArch;
 	fread(&(juego -> modoJuego), sizeof(juego -> modoJuego), 1, archPartida);
 	fread(&(juego -> proximoTurno), sizeof(juego -> proximoTurno), 1, archPartida);
 	fread(&(juego -> tableroJuego.dim), sizeof(dim), 1, archPartida);
 	
-	juego -> tableroJuego.tab = malloc(juego->tableroJuego.dim * sizeof(char*));
-	
+	juego -> tableroJuego.tab =NULL;
+	if(validarMemoria((void**)&(juego->tableroJuego.tab),juego->tableroJuego.dim * sizeof(char*)))
+		errorMemoria();
 	for(i = 0; i < juego->tableroJuego.dim; i++)
 	{	
-		juego -> tableroJuego.tab[i] = malloc(juego->tableroJuego.dim);
+		juego->tableroJuego.tab[i]=NULL;
+		if(validarMemoria((void**)&(juego->tableroJuego.tab[i]),juego->tableroJuego.dim))
+			errorMemoria();
 		fread(juego -> tableroJuego.tab[i], juego->tableroJuego.dim, 1, archPartida);
 	}
-	
+	(juego->proximoTurno)--;
 	//Cierra el archivo
 	fclose(archPartida);
 	return 1;
@@ -536,4 +528,10 @@ int Existe(char *archivo)
 {
 	struct stat buffer;
 	return (stat(archivo, &buffer) == 0);
+}
+
+void errorMemoria(void)
+{
+	printf("Error de memoria.\n");
+	exit(0);
 }

@@ -73,9 +73,8 @@ int CargarArchivo(tJuego * juego);
 int Existe(char *archivo);
 
 
-/*Recibe un puntero a la estructura juego y libera la memoria que se reservo para el tablero 
-**ya sea en CargarTablero como en GenerarTablero
-*/
-void liberarTablero(tJuego * juego);
+
+
+void errorMemoria(void);
 
 #endif
