@@ -451,7 +451,7 @@ int Guardar(tJuego * juego)
 {
 	int i;
 	int dim = juego -> tableroJuego.dim; //Guarda la dirección del tablero en una variable auxiliar
-	//printf("%s",juego->nombreArch);
+	(juego -> proximoTurno)++;
 	//Crea el archivo con el nombre nombreArch
 	FILE * archPartida;
     	//archPartida = fopen(juego -> nombreArch, "wb");
@@ -472,6 +472,7 @@ int Guardar(tJuego * juego)
 	
     	//Una vez finalizada la escritura, cierra el archivo
 	fclose(archPartida);
+	(juego -> proximoTurno)--;
 	
 	return 1;
 }
