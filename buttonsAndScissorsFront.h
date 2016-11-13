@@ -55,7 +55,9 @@ void jugar(tJuego* juego);
 
 int jugar2P(tJuego* juego);
 
-
+/* Recibe un puntero a la struct tJuego, y guarda los datos de la partida en un archivo. En caso de haber podido guardar y escribir
+** correctamente todos los datos en el archivo retorna 1, y en caso contrario retorna 0.
+*/
 int Guardar(tJuego * juego);
 
 /*Lee de entrada estandard el nombre del archivo que el usuario quiere cargar*/
