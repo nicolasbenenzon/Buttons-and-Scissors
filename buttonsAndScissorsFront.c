@@ -360,20 +360,23 @@ int LeerComando(tJuego * juego)
 				if(strcmp(cmd, "Y\n") == 0)
 				{
 					
-						printf("Ingrese el nombre del archivo: ");//falta validar nombre con espacio
-						fgets(name, MAX_NAME, stdin);
-						sscanf(name,"%s",name);
-						if((longitud=strlen(name)) > 0 && name[0] != '\n') 
-						{
-								juego->nombreArch=NULL;
-								if(validarMemoria((void**)(&(juego->nombreArch)),sizeof(char)*(longitud+1)))
-									errorMemoria();
-								//juego->nombreArch=malloc(sizeof(char)*(longitud+1));
-								sprintf(juego->nombreArch,"%s",name);
-								done = 1;
-						}
-						else printf("Debe ingresar un nombre válido de archivo.\n");
-					
+					aux=0;
+					printf("Ingrese el nombre del archivo: ");
+					if(scanf("%s%c", name, &aux) == 2 && aux == '\n')
+			
+					{
+
+							juego->nombreArch=NULL;
+							if(validarMemoria((void**)(&(juego->nombreArch)),sizeof(char)*(longitud+1)))
+								errorMemoria();
+							sprintf(juego->nombreArch,"%s",name);
+							done = 1;
+					}
+					else 
+					{	
+						printf("Debe ingresar un nombre válido de archivo.\n");
+						LIMPIABUFFER();
+					}
 				}
 				else if(strcmp(cmd, "N\n") == 0)
 				{
