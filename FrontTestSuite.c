@@ -110,8 +110,28 @@ void LeerComandoTest(CuTest * cuTest)
 	CuAssertIntEquals_Msg(cuTest,"Los valores de respuesta no coinciden",esperado,actual);
 	
 }
+void GenerarNombreTest(CuTest * cuTest)
+{
+	int dim=5;
+	char*actual,*esperado,*mensaje;
+	actual=GenerarNombre(dim);
+	esperado="5x5";
+	mensaje="No genero el nombre esperado.\n";
+	CuAssertStrEquals_Msg(cuTest,mensaje,esperado,actual);
 
+	dim=15;
+	actual=GenerarNombre(dim);
+	esperado="15x15";
+	mensaje="No genero el nombre esperado.\n";
+	CuAssertStrEquals_Msg(cuTest,mensaje,esperado,actual);
 
+	dim=30;
+	actual=GenerarNombre(dim);
+	esperado="30x30";
+	mensaje="No genero el nombre esperado.\n";
+	CuAssertStrEquals_Msg(cuTest,mensaje,esperado,actual);
+
+}
 
 CuSuite * FrontTestSuite()
 {
@@ -120,5 +140,6 @@ CuSuite * FrontTestSuite()
 	SUITE_ADD_TEST(cuSuite, CargarArchivoTest);
 	SUITE_ADD_TEST(cuSuite, GuardarTest);
 	SUITE_ADD_TEST(cuSuite, LeerComandoTest);
+	SUITE_ADD_TEST(cuSuite, GenerarNombreTest);
 	return cuSuite;
 }

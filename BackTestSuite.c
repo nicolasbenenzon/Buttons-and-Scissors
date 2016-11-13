@@ -103,6 +103,7 @@ void EfectuarCorteTest(CuTest * cuTest)
 }
 
 
+
 void JugadaValidaTest(CuTest * cuTest) 
 {
 	tablero t;
@@ -118,34 +119,34 @@ void JugadaValidaTest(CuTest * cuTest)
 	mov.final.columna = 4;
 	int actual = JugadaValida(&t, &mov, &error);
 	int esperado = 315;
-	char * mensaje = "Los valores de respuesta no coinciden";
+	char *mensaje = "Los valores de respuesta no coinciden";
 	CuAssertIntEquals_Msg(cuTest, mensaje, esperado, actual);
 	
 	mov.inicio.fila = 5;
 	mov.inicio.columna = 0;
 	mov.final.fila = 1;
 	mov.final.columna = 3;
-	int actual = JugadaValida(&t, &mov, &error);
-	int esperado = -1;
-	char * mensaje = "Los valores de respuesta no coinciden";
+	actual = JugadaValida(&t, &mov, &error);
+	esperado = -1;
+	mensaje = "Los valores de respuesta no coinciden";
 	CuAssertIntEquals_Msg(cuTest, mensaje, esperado, actual);
 	
 	mov.inicio.fila = 4;
 	mov.inicio.columna = 0;
 	mov.final.fila = 1;
 	mov.final.columna = 3;
-	int actual = JugadaValida(&t, &mov, &error);
-	int esperado = -1;
-	char * mensaje = "Los valores de respuesta no coinciden";
+	actual = JugadaValida(&t, &mov, &error);
+	esperado = -1;
+	mensaje = "Los valores de respuesta no coinciden";
 	CuAssertIntEquals_Msg(cuTest, mensaje, esperado, actual);
 	
-	mov.inicio.fila = 3;
+	mov.inicio.fila = 2;
 	mov.inicio.columna = 2;
 	mov.final.fila = 1;
-	mov.final.columna = 4;
-	int actual = JugadaValida(&t, &mov, &error);
-	int esperado = 45;
-	char * mensaje = "Los valores de respuesta no coinciden";
+	mov.final.columna = 3;
+	actual = JugadaValida(&t, &mov, &error);
+	esperado = 45;
+	mensaje = "Los valores de respuesta no coinciden";
 	CuAssertIntEquals_Msg(cuTest, mensaje, esperado, actual);
 }
 
