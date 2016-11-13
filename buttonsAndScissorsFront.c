@@ -6,6 +6,7 @@
 #include <sys/stat.h>
 #include "buttonsAndScissorsBack.h"
 #include "buttonsAndScissorsFront.h"
+#include "rand.h"
 #define LIMPIABUFFER() while(getchar()!='\n')
 #define MAX_LONG 256
 #define MAX_NAME 48
@@ -22,7 +23,7 @@ void botonesyTijeras(void)
     		juego.modoJuego=opcion-1;
     		do
     		{
-    			juego.proximoTurno=rand()%2;
+    			juego.proximoTurno=randInt(0,1);
 	
     			ElegirDim(&(juego.tableroJuego));
     			if((error=GenerarTablero(&(juego.tableroJuego)))==0)
@@ -72,7 +73,7 @@ int GenerarTablero(tablero* t)
 		{
 			salir=2;
 		}
-		elegido=rand()%cant;
+		elegido=randInt(0, cant-1);
 		while(!feof(arch)&&(!salir))
 		{
 			if(i==elegido)
