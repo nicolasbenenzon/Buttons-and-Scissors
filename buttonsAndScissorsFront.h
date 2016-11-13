@@ -46,6 +46,10 @@ void imprimir(tablero);
 void imprimirErrorTablero(int error);
 
 
+/*Lee de entrada estandard y analiza el comando ingresado por el usuario
+** Se fija que este sea válido, respete el formato adecuadamente
+** En caso de que lo sea, lo identifica y realiza las acciones correspondientes (save, quit o realizar un corte) dependiendo del comando ingresado.
+*/
 int LeerComando(tJuego *);
 
 
@@ -80,6 +84,11 @@ void leerNombre(tJuego* juego);
 int CargarArchivo(tJuego * juego);
 
 
+/*Recibe el nombre del archivo a verificar
+**Intenta obtener información del archivo y guardarla en una variable
+**Si el intento es exitoso devuelve 0 (el archivo existe), de lo contrario -1 por lo que el archivo no existe
+**Al hacer la comparación de la función con 0, obtenemos true o false según la existencia del archivo.
+*/
 int Existe(char *archivo);
 
 
