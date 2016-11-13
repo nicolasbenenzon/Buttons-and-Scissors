@@ -327,7 +327,7 @@ int jugar2P(tJuego* juego)
 		if(resp==1||resp==3)//si es salir y guardar o guardar
 		{
 			if(Guardar(juego))
-				printf("El archivo se guardo exitosamente.\n");
+				printf("La partida se guardó exitosamente.\n");
 		}
 		
 	}while(resp==3);//si puso solo guardar
