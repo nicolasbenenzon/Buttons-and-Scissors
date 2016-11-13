@@ -18,6 +18,9 @@ void ImprimirMenu(void);
 int LeerOpcion(void);
 
 
+/*Recibe la direccion de memoria del tablero y le pide al usuario que ingrese la dimension del tablero
+**valida que este dentro del rango correspondiente y si lo esta la carga en el campo correspondiente de la estructura tablero
+*/
 void ElegirDim(tablero * t);
 
 
@@ -53,12 +56,17 @@ int LeerComando(tJuego *);
 void jugar(tJuego* juego);
 
 
+/*Recibe la direccion de memoria de la estructura de tipo tJuego y ejecuta el turno de un jugador persona
+**Le pide al usuario que ingrese el comando y actua en corcondancia con el comando ingresado por el usuario
+*/
 int jugar2P(tJuego* juego);
+
 
 /* Recibe un puntero a la struct tJuego, y guarda los datos de la partida en un archivo. En caso de haber podido guardar y escribir
 ** correctamente todos los datos en el archivo retorna 1, y en caso contrario retorna 0.
 */
 int Guardar(tJuego * juego);
+
 
 /*Lee de entrada estandard el nombre del archivo que el usuario quiere cargar*/
 void leerNombre(tJuego* juego);
@@ -75,8 +83,7 @@ int CargarArchivo(tJuego * juego);
 int Existe(char *archivo);
 
 
-
-
+/*Imprime por salida estandard que ocurrio un error con la memoria y termina el programa*/
 void errorMemoria(void);
 
 #endif
