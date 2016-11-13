@@ -333,7 +333,7 @@ int HayOtrasVariedades(TipoTablero tablero, movimiento * mov)
 	{
 		//Calculo el sentido en que hago el recorrido(se guarda en deltaFil y deltaCol), y recorro
 		CalcularDeltasFilCol(mov);
-		for(fil = (mov -> inicio).fila + mov -> deltaFil, col = (mov -> inicio).columna + mov -> deltaCol; fil != (mov -> final).fila && col != (mov -> final).columna && !hayBotonDistinto; fil += mov -> deltaFil, col += mov -> deltaCol)
+		for(fil = (mov -> inicio).fila + mov -> deltaFil, col = (mov -> inicio).columna + mov -> deltaCol; (fil != (mov -> final).fila || col != (mov -> final).columna) && !hayBotonDistinto; fil += mov -> deltaFil, col += mov -> deltaCol)
 		{
 			if(tablero[fil][col] != botonOrigen && tablero[fil][col] != '0')
 				hayBotonDistinto = 1;
