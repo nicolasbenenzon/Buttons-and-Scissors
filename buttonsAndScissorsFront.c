@@ -19,36 +19,36 @@ void botonesyTijeras(void)
 	{
 		opcion=Menu();
 		if(opcion==1||opcion==2)
-    	{
-    		juego.modoJuego=opcion-1;//pues es 0 o 1
-    		do
     		{
-    			juego.proximoTurno=randInt(0,1);
+    			juego.modoJuego=opcion-1;//pues es 0 o 1
+    			do
+    			{
+    				juego.proximoTurno=randInt(0,1);
 	
-    			ElegirDim(&(juego.tableroJuego));
-    			if((error=GenerarTablero(&(juego.tableroJuego)))==0)
-		  			jugar(&juego);
-        		else
-					imprimirErrorTablero(error);
+    				ElegirDim(&(juego.tableroJuego));
+    				if((error=GenerarTablero(&(juego.tableroJuego)))==0)
+		  				jugar(&juego);
+        			else
+						imprimirErrorTablero(error);
 			}while(error);
         
-    	}
-    	else if(opcion==3)
-    	{
-    		int resp;
-    		do
+    		}
+    		else if(opcion==3)
     		{
-    			juego.nombreArch=NULL;
-			leerNombre(&juego);
-			resp=CargarArchivo(&juego);
-			if(resp==0)
-				printf("Error: El archivo esta corrupto o no existe.\n");
-			free(juego.nombreArch);
-		}while(resp==0);
+    			int resp;
+    			do
+    			{
+    				juego.nombreArch=NULL;
+				leerNombre(&juego);
+				resp=CargarArchivo(&juego);
+				if(resp==0)
+					printf("Error: El archivo esta corrupto o no existe.\n");
+				free(juego.nombreArch);
+			}while(resp==0);
 			
-    		jugar(&juego);
-    	}
-    }while(opcion!=4);
+    			jugar(&juego);
+    		}
+    	}while(opcion!=4);
 	
 }
 
