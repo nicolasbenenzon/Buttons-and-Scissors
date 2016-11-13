@@ -424,19 +424,18 @@ int LeerComando(tJuego * juego)
 				{
 					switch(error)
 					{
-						case 1: /*ReportarErrorPosicion(mov.inicio);
-							break;*/
-						case 2: /*ReportarErrorPosicion(mov.final);
-							break;*/
-						case 3: /*ReportarErrorEspacioVacio(mov.final);
-							break;*/
-						case 4: /*ReportarErrorEspacioVacio(mov.inicio);
-							break;*/
-						case 5: /*ReportarErrorLineaRecta();
-							break;*/
-						case 6: /*ReportarErrorVariedades();
-							break;*/
-						printf("Error\n");
+						case 1: printf("Error: No existe la posición [%d,%d]\n", mov.inicio.fila, mov.inicio.columna);
+							break;
+						case 2: printf("Error: No existe la posición [%d,%d]\n", mov.final.fila, mov.final.columna);
+							break;
+						case 3: printf("Error: La posición [%d,%d] no tiene ningún botón\n", mov.final.fila, mov.final.columna);
+							break;
+						case 4: printf("Error: La posición [%d,%d] no tiene ningún botón\n", mov.inicio.fila, mov.inicio.columna);
+							break;
+						case 5: printf("Error: El corte no forma una línea recta\n");
+							break;
+						case 6: printf("Error: El corte no tiene una única variedad de botones\n");
+							break;
 					}
 				} 
 			}
