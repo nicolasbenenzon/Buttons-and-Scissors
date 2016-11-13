@@ -43,12 +43,12 @@ void botonesyTijeras(void)
 				resp=CargarArchivo(&juego);
 				if(resp==0)
 					printf("Error: El archivo esta corrupto o no existe.\n");
-				free(juego.nombreArch);
-			}while(resp==0);
+				free(juego.nombreArch);//ya no necesito el nombre del archivo
+			}while(resp==0);//mientras haya error con el archivo a cargar
 			
     			jugar(&juego);
     		}
-    	}while(opcion!=4);
+    	}while(opcion!=4);//mientras no se haya elegido salir
 	
 }
 
@@ -75,7 +75,7 @@ int GenerarTablero(tablero* t)
 		{
 			salir=2;//error de formato en la linea de la cantidad hay algo que no es un numero ni enter
 		}
-		elegido=randInt(0, cant-1);
+		elegido=randInt(0, cant-1);//elijo el numero de tablero que voy a utilizar
 		while(!feof(arch)&&(!salir))
 		{
 			if(i==elegido)
@@ -140,7 +140,7 @@ int GenerarTablero(tablero* t)
 		{
 			if(t->tab!=NULL)
 			{
-				liberarTablero(t);
+				liberarTablero(t);//si hubo error libero el tablero pues no lo voy a utilizar
 			}
 		}
 		fclose(arch);
@@ -175,6 +175,7 @@ char * GenerarNombre(int dimension)
 	sprintf(nombre,"%dx%d",dimension,dimension);
 	return nombre;
 }
+
 /*Imprime el tablero por salida estandar*/
 void imprimir(tablero tabjuego)
 {
