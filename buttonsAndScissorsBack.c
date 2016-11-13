@@ -29,7 +29,7 @@ int buscdir(tablero t,int modo,int fila,int columna,int incfil,int inccol,int *b
 int jugarAi(tablero* t,int *puntos)
 {
 	int direcciones[4][2]={{-1,0},{-1,1},{0,1},{1,1}};
-	int i,j,k,cant=0,botones,dimension=0,maximo=2,modo=rand()%2,blancos;
+	int i,j,k,cant=0,botones,dimension=0,maximo=2,modo=randInt(0,1),blancos;
 	movimiento * cortes=NULL,resp;
 	for(i=0;i<t->dim;i++)
 	{
@@ -85,10 +85,10 @@ int jugarAi(tablero* t,int *puntos)
 			}
 		}
 	}
-	//cortes=realloc(cortes,sizeof(*cortes)*dimension);
+	
 	if(validarMemoria((void**)&cortes,sizeof(*cortes)*dimension))
 		return 1;
-	resp=cortes[rand()%dimension];
+	resp=cortes[randInt(0,dimension-1)];
 	free(cortes);
 	resp.direccion=DireccionCorte(&resp);
 	CalcularDeltasFilCol(&resp);
