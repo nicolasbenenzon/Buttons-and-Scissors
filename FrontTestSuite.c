@@ -81,6 +81,36 @@ void GuardarTest(CuTest * cuTest)
 	CuAssertIntEquals_Msg(cuTest, mensaje, esperado, actual);
 }
 
+void LeerComandoTest(CuTest * cuTest)
+{
+	
+	tJuego juego;
+	juego.tableroJuego.tab = malloc(5 * sizeof(char*));
+	for(int i = 0; i < 5; i++)
+	{
+		juego.tableroJuego.tab[i] = malloc(5);
+	}
+	juego.tableroJuego.tab[0][0] = 'A'; juego.tableroJuego.tab[0][1] = 'A'; juego.tableroJuego.tab[0][2] = '0'; juego.tableroJuego.tab[0][3] = '0'; juego.tableroJuego.tab[0][4] = '0';
+	juego.tableroJuego.tab[1][0] = '0'; juego.tableroJuego.tab[1][1] = '0'; juego.tableroJuego.tab[1][2] = '0'; juego.tableroJuego.tab[1][3] = 'B'; juego.tableroJuego.tab[1][4] = 'D';
+	juego.tableroJuego.tab[2][0] = '0'; juego.tableroJuego.tab[2][1] = '0'; juego.tableroJuego.tab[2][2] = 'B'; juego.tableroJuego.tab[2][3] = '0'; juego.tableroJuego.tab[2][4] = '0';
+	juego.tableroJuego.tab[3][0] = '0'; juego.tableroJuego.tab[3][1] = 'C'; juego.tableroJuego.tab[3][2] = 'D'; juego.tableroJuego.tab[3][3] = 'C'; juego.tableroJuego.tab[3][4] = 'A';
+	juego.tableroJuego.tab[4][4] = 'B'; juego.tableroJuego.tab[4][1] = '0'; juego.tableroJuego.tab[4][2] = '0'; juego.tableroJuego.tab[4][3] = '0'; juego.tableroJuego.tab[4][4] = '0';
+	
+	int actual=LeerComando(&juego);
+	int esperado=1;
+	CuAssertIntEquals_Msg(cuTest,"Los valores de respuesta no coinciden",esperado,actual);
+	actual=LeerComando(&juego);
+	esperado=2;
+	CuAssertIntEquals_Msg(cuTest,"Los valores de respuesta no coinciden",esperado,actual);
+	actual=LeerComando(&juego);
+	esperado=3;
+	CuAssertIntEquals_Msg(cuTest,"Los valores de respuesta no coinciden",esperado,actual);
+	actual=LeerComando(&juego);
+	esperado=4;
+	CuAssertIntEquals_Msg(cuTest,"Los valores de respuesta no coinciden",esperado,actual);
+	
+}
+
 
 
 CuSuite * FrontTestSuite()
@@ -89,5 +119,6 @@ CuSuite * FrontTestSuite()
 	SUITE_ADD_TEST(cuSuite, lecturaTableroInicialTest);
 	SUITE_ADD_TEST(cuSuite, CargarArchivoTest);
 	SUITE_ADD_TEST(cuSuite, GuardarTest);
+	SUITE_ADD_TEST(cuSuite, LeerComandoTest);
 	return cuSuite;
 }
