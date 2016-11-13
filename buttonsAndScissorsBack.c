@@ -240,7 +240,7 @@ int validarMemoria(void **punt,unsigned int bytes)
 	return 0;
 }
 
-
+/*Libera el Tablero*/
 void liberarTablero(tablero * t)
 {
 	int i;
