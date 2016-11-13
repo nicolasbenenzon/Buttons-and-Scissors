@@ -97,6 +97,9 @@ int jugarAi(tablero* t,int *puntos)
 /*Devuelve 1 si no hay mas jugadas posibles para el jugador siguiente y 0 en caso contrario*/
 int hayGanador(tablero t)
 {
+	/*Cada fila representa una direccion y las columnas incremento a fila y columna respectivamente
+	**Son las direcciones necesarias para recorrer toda la matriz incluyendo una unica vez a cada movimiento posible
+	*/
 	int direcciones[4][2]={{-1,0},{-1,1},{0,1},{1,1}};
 	int i,j,k,botones;
 	for(i=0;i<t.dim;i++)
@@ -109,7 +112,7 @@ int hayGanador(tablero t)
 				{
 					buscdir(t,1,i,j,direcciones[k][0],direcciones[k][1],&botones);
 					if(botones==2)
-						return 0;
+						return 0;//si ya encontre una jugada salgo pues se puede seguir jugando
 				}
 			}
 		}
@@ -231,7 +234,7 @@ int validarMemoria(void **punt,unsigned int bytes)
 	void *aux;
 	aux=realloc(*punt,bytes);
 	if(aux==NULL)
-		return 1;
+		return 1;//no se pudo asignar memoria
 	*punt=aux;
 	return 0;
 }
@@ -242,9 +245,9 @@ void liberarTablero(tablero * t)
 	int i;
 	for(i=0;i<t->dim;i++)
 	{
-		free(t->tab[i]);
+		free(t->tab[i]);//libero cada fila
 	}
-	free(t->tab);
+	free(t->tab);//libero el tablero
 }
 
 
