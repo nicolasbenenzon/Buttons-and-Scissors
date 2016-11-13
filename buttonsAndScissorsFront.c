@@ -10,7 +10,7 @@
 #define LIMPIABUFFER() while(getchar()!='\n')
 #define MAX_LONG 256
 #define MAX_NAME 48
-
+/*Funcion principal del juego, es llamada por main y controla el flujo del juego*/
 void botonesyTijeras(void)
 {
 	tJuego juego;
@@ -153,7 +153,7 @@ int GenerarTablero(tablero* t)
 	
 }
 
-
+/*Imprime el error producido en la funcion GenerarTablero*/
 void imprimirErrorTablero(int error)
 {
 	switch(error)
@@ -248,7 +248,7 @@ int LeerOpcion(void)
 	return opcion;
 }
 
-
+/*Imprime el menu y pide una opcion*/
 int Menu()
 {
     ImprimirMenu();
@@ -256,6 +256,7 @@ int Menu()
    
 }
 
+/*Imprime el Menu*/
 void ImprimirMenu()
 {
     printf("MENÚ DEL JUEGO:\n");
@@ -265,6 +266,7 @@ void ImprimirMenu()
     printf("4. Terminar\n");
 }
 
+/*Controla los turnos del juego*/
 void jugar(tJuego* juego)
 {
 	int jugador1=1,jugador2=2,termino;
@@ -303,6 +305,7 @@ void jugar(tJuego* juego)
 }
 
 
+/*Recibe la dimension del usuario*/
 void ElegirDim(tablero * t)
 {
 	char c;
@@ -318,7 +321,7 @@ void ElegirDim(tablero * t)
 
 
 
-
+/*Lleva a cabo las acciones del turno de el o los jugadores persona*/
 int jugar2P(tJuego* juego)
 {
 	int resp;
@@ -336,7 +339,7 @@ int jugar2P(tJuego* juego)
 	return resp==1||resp==2;
 }
 
-
+/*Lee el comando ingresado por el usuario*/
 int LeerComando(tJuego * juego)
 {
 	movimiento mov;
@@ -449,6 +452,7 @@ int LeerComando(tJuego * juego)
 	return done;
 }
 
+/*Guarda el archivo*/
 int Guardar(tJuego * juego)
 {
 	int i;
@@ -479,6 +483,7 @@ int Guardar(tJuego * juego)
 	return 1;
 }
 
+/*Lee el nombre del archivo a cargar*/
 void leerNombre(tJuego* juego)
 {
 	char c;
@@ -532,12 +537,14 @@ int CargarArchivo(tJuego * juego)
 	return 1;
 }
 
+/*Se fija si existe el archivo*/
 int Existe(char *archivo)
 {
 	struct stat buffer;
 	return (stat(archivo, &buffer) == 0);
 }
 
+/*Imprime por salida estandard que ocurrio un error con la memoria y termina el programa*/
 void errorMemoria(void)
 {
 	printf("Error de memoria.\n");
