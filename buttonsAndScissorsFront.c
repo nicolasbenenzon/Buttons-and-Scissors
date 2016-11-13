@@ -532,7 +532,11 @@ int CargarArchivo(tJuego * juego)
 	return 1;
 }
 
-/*Se fija si existe el archivo*/
+/*Recibe el nombre del archivo a verificar
+**Intenta obtener información del archivo y guardarla en una variable
+**Si el intento es exitoso devuelve 0 (el archivo existe), de lo contrario -1 por lo que el archivo no existe
+**Al hacer la comparación de la función con 0, obtenemos true o false según la existencia del archivo.
+*/
 int Existe(char *archivo)
 {
 	struct stat buffer;
