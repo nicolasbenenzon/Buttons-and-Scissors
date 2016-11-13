@@ -16,7 +16,7 @@ int buscdir(tablero t,int modo,int fila,int columna,int incfil,int inccol,int *b
 		columna+=inccol;
 		if(fila>=t.dim||fila<0||columna>=t.dim||columna<0||(((t.tab)[fila][columna]!=boton)&&((t.tab)[fila][columna]!='0')))
 			seguir=0;
-		else if(modo==1&&(*botones)==2)
+		else if(modo==1&&(*botones)==2)//porque la minima cantidad de botones a cortar es dos
 			seguir=0;
 		else if((t.tab)[fila][columna]==boton)
 			(*botones)++;
@@ -29,6 +29,9 @@ int buscdir(tablero t,int modo,int fila,int columna,int incfil,int inccol,int *b
 /*Elije al azar una de las dos estrategias(maxima cantidad de botones y minima cantidad de botes) y elige el movimiento aleatoriamente de todos los posibles*/
 int jugarAi(tablero* t,int *puntos)
 {
+	/*Cada fila representa una direccion y las columnas incremento a fila y columna respectivamente
+	**Son las direcciones necesarias para recorrer toda la matriz incluyendo una unica vez a cada movimiento posible
+	*/
 	int direcciones[4][2]={{-1,0},{-1,1},{0,1},{1,1}};
 	int i,j,k,cant=0,botones,dimension=0,maximo=2,modo=randInt(0,1),blancos;
 	movimiento * cortes=NULL,resp;
