@@ -79,13 +79,12 @@ int GenerarTablero(tablero* t)
 		while(!feof(arch)&&(!salir))
 		{
 			if(i==elegido)
-				//t->tab=malloc(sizeof(char*)*(t->dim));
 				if(validarMemoria((void**)(&(t->tab)),sizeof(char*)*(t->dim)))
 					return 3;
 			for(j=0;j<t->dim&&(!salir);j++)
 			{
 				if(i==elegido)
-				{	//(t->tab)[j]=malloc(sizeof(char)*(t->dim));
+				{	
 					(t->tab)[j]=NULL;
 					if(validarMemoria((void**)((t->tab)+j),sizeof(char)*(t->dim)))
 						return 3;
@@ -141,9 +140,6 @@ int GenerarTablero(tablero* t)
 		{
 			if(t->tab!=NULL)
 			{
-				/*for(j=0;j<t->dim;j++)
-					free((t->tab)[j]);
-				free(t->tab);*/
 				liberarTablero(t);
 			}
 		}
@@ -174,7 +170,6 @@ void imprimirErrorTablero(int error)
 char * GenerarNombre(int dimension)
 {
 	char *nombre=NULL;
-	//nombre=malloc(sizeof(*nombre)*6);
 	if(validarMemoria((void**)(&nombre),6))
 		errorMemoria();
 	sprintf(nombre,"%dx%d",dimension,dimension);
@@ -402,7 +397,6 @@ int LeerComando(tJuego * juego)
 					juego->nombreArch=NULL;
 					if(validarMemoria((void**)(&(juego->nombreArch)),sizeof(char)*(longitud+1)))
 						errorMemoria();
-					//juego->nombreArch=malloc(sizeof(char)*(longitud+1));
 					sprintf(juego->nombreArch,"%s",name);
 					done = 3;
 				}
