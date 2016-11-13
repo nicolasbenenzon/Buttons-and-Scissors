@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include "buttonsAndScissorsBack.h"
+#include "rand.h"
 #define BLOQUE 10
 /*Busca botones del mismo tipo al inicial en la direccion de los incrementos y devuelve en su nombre la cantidad de blancos*/ 
 int buscdir(tablero t,int modo,int fila,int columna,int incfil,int inccol,int *botones)
