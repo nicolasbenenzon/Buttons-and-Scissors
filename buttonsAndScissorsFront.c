@@ -410,6 +410,7 @@ int LeerComando(tJuego * juego)
 				mov.inicio.columna = C1;
 				mov.final.fila = F2;
 				mov.final.columna = C2;
+				// verifica y efectua el corte según las coordenadas ingresadas por el usuario
 				if((direccionCorte = JugadaValida(&(juego->tableroJuego), &mov, &error)) != -1) 
 				{
 					puntos=EfectuarCorte(juego->tableroJuego.tab, &mov);
