@@ -181,7 +181,7 @@ void imprimir(tablero tabjuego)
 {
 	int i,j;
 	
-	
+	//primero imprimo los indices de las columnas con los primeros dos for anidados
 		for(i=0;i<2;i++)
 		{
 			printf("\t");
@@ -199,6 +199,7 @@ void imprimir(tablero tabjuego)
 			}
 			printf("\n");
 		}
+	//Imprimo los indices de las filas seguidos de los elementos de las filas con los proximos dos for anidaddos
 		for(i=0;i<tabjuego.dim;i++)
 		{
 				if(tabjuego.dim<10)
@@ -228,7 +229,7 @@ int LeerOpcion(void)
 	char c;
 	do
 	{
-		c=0;
+		c=0;//pues nunca va tener el valor 0 al leer de entrada estandard
 		printf("Ingrese la opcion: ");
 		scanf("%d%c",&opcion,&c);
 		if(c!='\n')
@@ -284,11 +285,10 @@ void jugar(tJuego* juego)
 					errorMemoria();
 				}
 			}
-			else if(juego->proximoTurno==1)
+			else (juego->proximoTurno==1)
 				termino=jugar2P(juego);
-			else
-				termino=jugar2P(juego);
-			if(!termino)
+			
+			if(!termino)//si el jugador no puso quit
 			{
 				if((termino=hayGanador(juego->tableroJuego)))//si no hay mas jugadas posibles o si quedo vacio el tablero
 					printf("El ganador es el jugador %d!!!\n\n\n",(juego->proximoTurno==0)?jugador1:jugador2);
@@ -297,7 +297,7 @@ void jugar(tJuego* juego)
 			}
 		}
 	}while(!termino);
-	liberarTablero(&(juego->tableroJuego));
+	liberarTablero(&(juego->tableroJuego));//Como ya termino esta partida no necesito mas el tablero
 }
 
 
