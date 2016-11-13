@@ -285,7 +285,7 @@ void jugar(tJuego* juego)
 					errorMemoria();
 				}
 			}
-			else (juego->proximoTurno==1)
+			else
 				termino=jugar2P(juego);
 			
 			if(!termino)//si el jugador no puso quit
@@ -332,7 +332,7 @@ int jugar2P(tJuego* juego)
 		}
 		
 	}while(resp==3);//si puso solo guardar
-	return resp==1||resp==2;
+	return resp==1||resp==2;//da verdadero(1) si puso quit
 }
 
 /*Lee el comando ingresado por el usuario*/
@@ -453,7 +453,7 @@ int Guardar(tJuego * juego)
 {
 	int i;
 	int dim = juego -> tableroJuego.dim; //Guarda la dirección del tablero en una variable auxiliar
-	(juego -> proximoTurno)++;
+	(juego -> proximoTurno)++;//pues debe guardarse como 1 o 2 y lo utilizamos como 0 o 1
 	//Crea el archivo con el nombre nombreArch
 	FILE * archPartida;
     archPartida = fopen(juego->nombreArch, "wb");
@@ -474,7 +474,7 @@ int Guardar(tJuego * juego)
 	
     	//Una vez finalizada la escritura, cierra el archivo
 	fclose(archPartida);
-	(juego -> proximoTurno)--;
+	(juego -> proximoTurno)--;//pues lo utilizamos como 0 o 1 y debe guardarse como 1 o 2
 	
 	return 1;
 }
@@ -527,7 +527,7 @@ int CargarArchivo(tJuego * juego)
 			errorMemoria();
 		fread(juego -> tableroJuego.tab[i], juego->tableroJuego.dim, 1, archPartida);
 	}
-	(juego->proximoTurno)--;
+	(juego->proximoTurno)--;//pues lo utilizamos como 0 o 1 y al cargarlo va a ser 1 o 2
 	//Cierra el archivo
 	fclose(archPartida);
 	return 1;
@@ -548,5 +548,5 @@ int Existe(char *archivo)
 void errorMemoria(void)
 {
 	printf("Error de memoria.\n");
-	exit(0);
+	exit(0);//Es el unico caso que termina el programa pues si no hay memoria para algo no tiene sentido que el juego continue
 }
