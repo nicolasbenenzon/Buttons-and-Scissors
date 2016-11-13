@@ -20,7 +20,7 @@ void botonesyTijeras(void)
 		opcion=Menu();
 		if(opcion==1||opcion==2)
     	{
-    		juego.modoJuego=opcion-1;
+    		juego.modoJuego=opcion-1;//pues es 0 o 1
     		do
     		{
     			juego.proximoTurno=randInt(0,1);
@@ -73,7 +73,7 @@ int GenerarTablero(tablero* t)
 		
 		if(n1!='\n')
 		{
-			salir=2;
+			salir=2;//error de formato en la linea de la cantidad hay algo que no es un numero ni enter
 		}
 		elegido=randInt(0, cant-1);
 		while(!feof(arch)&&(!salir))
@@ -107,13 +107,13 @@ int GenerarTablero(tablero* t)
 					}
 					else
 					{
-						salir=2;
+						salir=2;//error de formato en el tablero del archivo hay algo que no es una letra ni espacio
 					}
 				}
 				c=fgetc(arch);
 				if(!feof(arch)&&(salir=(c!='\n')))
 				{
-					salir=2;
+					salir=2;//erro de formato en la ultima linea del tablero hay mas caracteres de los que deberia tener
 				}			
 			}
 			if(!salir)
@@ -121,21 +121,21 @@ int GenerarTablero(tablero* t)
 				c=fgetc(arch);
 				if(!feof(arch)&&(salir=(c!='-')))
 				{
-					salir=2;
+					salir=2;//error de formato el caracter que separa los tableros no es el correcto
 				}
 				else
 				{
 					c=fgetc(arch);
 					if(!feof(arch)&&(salir=(c!='\n')))
 					{
-						salir=2;
+						salir=2;//error de formato hay mas de un caracter en la separacion de los tableros
 					}
 				}
 			}
 			i++;
 		}
 		if(i<cant)
-			salir=2;
+			salir=2;//error de formato hay menos tableros de los que dice en la primer linea
 		if(salir)
 		{
 			if(t->tab!=NULL)
