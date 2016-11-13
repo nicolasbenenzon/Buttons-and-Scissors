@@ -260,7 +260,6 @@ void liberarTablero(tablero * t)
 int JugadaValida(tablero * t, movimiento * mov, int * error)
 {
 	mov -> direccion = -1;
-	//int botonesCortados = 0;
 	
 	//Verifico que exista la posición de origen, en caso negativo reporta el error y retorna 0
 	if(ExistePosicion(mov -> inicio, t -> dim))
@@ -278,35 +277,34 @@ int JugadaValida(tablero * t, movimiento * mov, int * error)
 					if(! HayOtrasVariedades(t -> tab, mov))
 					{
 						//En caso de haber cumplido con todos los requisitos, se efectúa el corte y guarda la cantidad de botones cortados
-						//botonesCortados = EfectuarCorte(tablero, origen, destino, direccion);
 						return mov -> direccion;
 					}
 					else
 					{
-						*error = 6;//ReportarErrorVariedades(); //Como hay más de una variedad de botones en esa dirección, reporta el error
+						*error = 6;//Como hay más de una variedad de botones en esa dirección, reporta el error
 					}
 				}
 				else
 				{
-					*error = 5;//ReportarErrorLineaRecta(); //Como el origen y destino no forman una línea recta, reporta el error
+					*error = 5;//Como el origen y destino no forman una línea recta, reporta el error
 				}
 			}
 			else
 			{
 				//Si alguno de las 2 coordenadas es un espacio vacio entonces ve cuál es y reporta el error
-				if(EstaVacio(t -> tab, mov -> inicio)) *error = 3;//ReportarErrorEspacioVacio(origen);
-				else *error = 4;//ReportarErrorEspacioVacio(destino);
+				if(EstaVacio(t -> tab, mov -> inicio)) *error = 3;
+				else *error = 4;
 			}
 		}
 		else
 		{
-			//ReportarErrorPosicion(destino); //Como no existe la posición de destino, reporta el error
+			//Como no existe la posición de destino, reporta el error
 			*error = 2;
 		}
 	}
 	else
 	{
-		//ReportarErrorPosicion(origen); //Como no existe la posición de origen, reporta el error
+		//Como no existe la posición de origen, reporta el error
 		*error = 1;
 	}
 	
