@@ -39,7 +39,7 @@ int jugarAi(tablero* t,int *puntos)
 			if((t->tab)[i][j]!='0')
 			{for(k=0;k<4;k++)
 				{
-					if(modo==0)
+					if(modo==0)//maxima cantidad de botones
 					{
 						blancos=buscdir(*t,modo,i,j,direcciones[k][0],direcciones[k][1],&botones);
 						if(botones>=maximo)
@@ -47,7 +47,7 @@ int jugarAi(tablero* t,int *puntos)
 							if(botones>maximo)
 							{
 								maximo=botones;
-								dimension=0;
+								dimension=0;//Ya no sirven las jugadas guardadas porque hay por lo menos una con mas botones
 							}
 
 						}
@@ -83,7 +83,7 @@ int jugarAi(tablero* t,int *puntos)
 	
 	if(validarMemoria((void**)&cortes,sizeof(*cortes)*dimension))
 		return 1;
-	resp=cortes[randInt(0,dimension-1)];
+	resp=cortes[randInt(0,dimension-1)];//elijo una jugada de las posibles
 	free(cortes);
 	resp.direccion=DireccionCorte(&resp);
 	CalcularDeltasFilCol(&resp);
