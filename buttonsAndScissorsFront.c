@@ -39,10 +39,12 @@ void botonesyTijeras(void)
     		do
     		{
     			juego.nombreArch=NULL;
-				leerNombre(&juego);
-				resp=CargarArchivo(&juego);
-				free(juego.nombreArch);
-			}while(resp==0);
+			leerNombre(&juego);
+			resp=CargarArchivo(&juego);
+			if(resp==0)
+				printf("Error: El archivo esta corrupto o no existe.\n");
+			free(juego.nombreArch);
+		}while(resp==0);
 			
     		jugar(&juego);
     	}
@@ -484,7 +486,7 @@ void leerNombre(tJuego* juego)
 	do
 	{
 		c=0;
-		printf("Ingrese el nombre del archivo(sin espacios) que quiere cargar:\n");
+		printf("Ingrese el nombre del archivo: ");
 		scanf("%s%c",juego->nombreArch,&c);
 		if(c!='\n')
 		{
