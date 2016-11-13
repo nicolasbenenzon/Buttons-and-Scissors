@@ -64,12 +64,6 @@ int jugarAi(tablero* t,int *puntos)
 					{
 						if(cant%BLOQUE==0)
 						{
-							/*aux=realloc(cortes,(cant+BLOQUE)*sizeof(*cortes));
-							if(aux!=NULL)
-							{
-								cortes=aux;
-							}
-							else exit(0);*/
 							if(validarMemoria((void**)&cortes,(cant+BLOQUE)*sizeof(*cortes)))
 								return 1;
 						}
@@ -93,7 +87,6 @@ int jugarAi(tablero* t,int *puntos)
 	free(cortes);
 	resp.direccion=DireccionCorte(&resp);
 	CalcularDeltasFilCol(&resp);
-	printf("fila1=%d\tcolumna1=%d\nfila2=%d\tcolumna2=%d\n",resp.inicio.fila,resp.inicio.columna,resp.final.fila,resp.final.columna);
 	*puntos=*puntos+EfectuarCorte(t->tab,&resp);
 	return 0;
 }
