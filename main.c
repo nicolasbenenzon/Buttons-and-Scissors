@@ -3,9 +3,11 @@
 #include <time.h>
 #include "buttonsAndScissorsBack.h"
 #include "buttonsAndScissorsFront.h"
+#include "rand.h"
+
 int main()
 {
-	srand(time(NULL));
+	randomize();
 	botonesyTijeras();
     
 	return 0;
