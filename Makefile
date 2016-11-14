@@ -13,7 +13,8 @@ FILES=buttonsAndScissorsFront.c buttonsAndScissorsBack.c main.c rand.c
 #Nombre del ejecutable y archivos para compilar los testings
 #OUTPUT_FILE=Testing
 #FILES=CuTest.c AllTests.c FrontTestSuite.c BackTestSuite.c buttonsAndScissorsFront.c buttonsAndScissorsBack.c rand.c
-#para ejecutar los test debe redireccionarse la entrada con el archivo
+#para ejecutar los test debe redireccionarse la entrada con el archivo LeerComandoTest para el test de leercomando
+#deberia ejecutarse el siguiente comando ./Testing<LeerComandoTest
 ###############################################################################################################################
 
 all:
