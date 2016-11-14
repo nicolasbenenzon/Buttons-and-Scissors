@@ -4,7 +4,7 @@ COMPILER=gcc
 
 ###############################################################################################################################
 #Nombre del ejecutable y archivos para compilar el programa
-OUTPUT_FILE=BotonesyTijeras
+OUTPUT_FILE=juego
 FILES=buttonsAndScissorsFront.c buttonsAndScissorsBack.c main.c rand.c
 ###############################################################################################################################
 
@@ -16,6 +16,6 @@ FILES=buttonsAndScissorsFront.c buttonsAndScissorsBack.c main.c rand.c
 ###############################################################################################################################
 
 all:
-	$(COMPILER) -o $(OUTPUT_FILE) $(FILES) -Wall -pedantic -std=c99 -lm
+	$(COMPILER) -o $(OUTPUT_FILE) $(FILES) -Wall -pedantic -std=c99 
 clean:
 	rm $(OUTPUT_FILE)
