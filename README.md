@@ -1,1 +1,1 @@
-# Buttons and Scissors Game Developed in C
+# Buttons and Scissors Game
